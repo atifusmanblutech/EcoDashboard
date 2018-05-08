@@ -26,8 +26,8 @@ dashboardPage(
                
                dashboardSidebar( width = 350, collapsed = TRUE,
                                  sidebarMenu(id = "sidebar",
-                                             menuItem("Tab2", tabName = "tab_homePage", icon = icon("users")),
-                                             menuItem("Day Insights", tabName = "tab_dayInsights", icon = icon("menu-hamburger", lib = "glyphicon") ),
+                                             menuItem("Home Page", tabName = "tab_homePage", icon = icon("home",lib = "font-awesome")),
+                                             menuItem("Day Insights", tabName = "tab_dayInsights", icon = icon("chart-bar",lib = "font-awesome") ),
                                              conditionalPanel("input.sidebar === 'tab_dayInsights'",
                                                               hr(),
                                                               h3("Insights",  style = "align:center;text-align:center"),
@@ -171,7 +171,7 @@ dashboardPage(
                                                               
                                              ),
                                              
-                                             menuItem("Individual Customer Insights", icon = icon("menu-hamburger",lib = "glyphicon"), tabName = "tab_customerInsights"),
+                                             menuItem("Individual Customer Insights", icon = icon("users",lib = "font-awesome"), tabName = "tab_customerInsights"),
                                              conditionalPanel("input.sidebar === 'tab_customerInsights'",
                                                               hr(),
                                                               h3("Individual Insights", style = "align:center;text-align:center;"),
@@ -215,8 +215,7 @@ dashboardPage(
                                                               
                                                               h3("Classified Insights", style = "align:center;text-align:center;"),
                                                               hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                              #  uiOutput("customerRFMchoice") %>% withSpinner(color =
-                                                              #                                                 "#696969", type = 7),
+                                                              uiOutput("customerRFMchoice") ,
                                                               helpText(
                                                                 "Note: Selecting a Classification will display graph of",
                                                                 br(),
@@ -257,13 +256,11 @@ dashboardPage(
                                                                       
                                                                     ),
                                                                     
-                                                                    #### Condition for Email Marketing
+##########
+
                                                                     conditionalPanel(
                                                                       condition = "input.CustomerMarketingChoice == 'emailMarketing'",
                                                                       
-                                                                      # uiOutput("dayFilterControlForEmail"),
-                                                                      # helpText("Note: Emails will be sent to all customers on selected Days"),
-                                                                      #
                                                                       textAreaInput(
                                                                         "textEmailMarketing",
                                                                         "Enter campaign text or offers to send: ",
@@ -284,9 +281,9 @@ dashboardPage(
                                              ),
                                              
                                              
-                                             menuItem("Location Centric Insights", icon = icon("menu-hamburger",lib = "glyphicon"), tabName = "tab_locationInsights"),
+                                             menuItem("Location Centric Insights", icon = icon("globe",lib = "font-awesome"), tabName = "tab_locationInsights"),
                                              conditionalPanel("input.sidebar === 'tab_locationInsights'",
-                                                              # uiOutput("selCountry"),
+                                                              uiOutput("selCountry"),
                                                               
                                                               
                                                               br(),
@@ -303,14 +300,12 @@ dashboardPage(
                                                                   
                                                                   h3("Marketing",style = "align:center;text-align:center;"),
                                                                   hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                                  # uiOutput("countryControls") %>% withSpinner(color =
-                                                                  #                                              "#696969", type = 7),
+                                                                  uiOutput("countryControls"),
                                                                   helpText("Note: Emails will be sent to all customers in selected", 
                                                                            br(),
                                                                            "Locations"),
                                                                   
-                                                                  #uiOutput("productControls"),
-                                                                  # choices=c('All','Netherlands','EIRE','Germany','France','Australia'),1),
+                                                                  uiOutput("productControls"),
                                                                   helpText("Note: Discounts will be applied only on selected products"),
                                                                   
                                                                   textAreaInput(
@@ -332,17 +327,16 @@ dashboardPage(
                                                               )#end of shinyjs::hidden
                                                               
                                              ),
-                                             menuItem("Product Insights", icon = icon("menu-hamburger",lib = "glyphicon"), tabName = "tab_productInsights"),
+                                             menuItem("Product Insights", icon = icon("product-hunt",lib = "font-awesome"), tabName = "tab_productInsights"),
                                              conditionalPanel("input.sidebar === 'tab_productInsights'",
-                                                              # uiOutput('productCountryControls') ,
+                                                              uiOutput('productCountryControls') ,
                                                               helpText("Select product to view insights and trends related to the",
                                                                        br(),
                                                                        "product"),
                                                               hr (),
                                                               h3("Product Marketing",style = "align:center;text-align:center;"),
                                                               hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                              #uiOutput('ProductCountryMarketingFilter')%>% withSpinner(color =
-                                                              #                                                          "#696969", type = 7),
+                                                              uiOutput('ProductCountryMarketingFilter'),
                                                               textAreaInput(
                                                                 'ProductCampaignText',
                                                                 "Enter campaign text or offers to send: ",
@@ -357,7 +351,8 @@ dashboardPage(
                                                                     actionButton(
                                                                       "ProductCampaign",
                                                                       "Launch Email Campaign",
-                                                                      icon("envelope")
+                                                                      icon("envelope"),
+                                                                      style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
                                                                       
                                                                     ),
                                                                     hr(),
@@ -383,8 +378,7 @@ dashboardPage(
                dashboardBody(
                  useShinyjs(),
                  tags$head(
-                   #tags$script(HTML("<script type='text/javascript' src='js/hoge.js'></script>")),
-                   #HTML("<script type='text/javascript' src='js/script.js'></script>"),
+
                    tags$script(src="js/script.js"),
                    tags$style(
                    HTML(
@@ -415,20 +409,19 @@ dashboardPage(
                      }
                    ')
                  )
-                 #tags$head(HTML("<script type='text/javascript' src='js/hoge.js'></script>"))
                  ),
                  tabItems(
                    tabItem(tabName = "tab_homePage",
                                   fluidRow(
                                     tags$div(href="#shiny-tab-tab_customerInsights", fluid = TRUE,
                                              width = 3, "data-toggle" = "tab",
-                                             infoBox(value = "Go to Customer Insights",title = "Customer Insights")),
+                                             infoBox(value = "Go to Customer Insights",title = "Customer Insights", icon = icon("users",lib = "font-awesome"))),
                                     tags$div(href="#shiny-tab-tab_productInsights", fluid = TRUE,
                                              width = 3, "data-toggle" = "tab",
-                                             infoBox(value = "Go to Product Insights",title = "Product Insights")),
+                                             infoBox(value = "Go to Product Insights",title = "Product Insights", icon = icon("product-hunt",lib = "font-awesome"))),
                                     tags$div(href="#shiny-tab-tab_locationInsights", fluid = TRUE,
                                              width = 3, "data-toggle" = "tab",
-                                             infoBox(value = "Go to Location Insights",title = "Location Insights")),
+                                             infoBox(value = "Go to Location Insights",title = "Location Insights", icon = icon("globe",lib = "font-awesome"))),
                                     tags$div(href="#shiny-tab-tab_dayInsights", fluid = TRUE,
                                              width = 3, "data-toggle" = "tab",
                                              infoBox(value = "Go to Timeline Insights",title = "Timeline Insights"))
@@ -437,10 +430,8 @@ dashboardPage(
                                     
                    tabItem(tabName = "tab_dayInsights",
                            fluidRow(
-                              # tags$div(href="#shiny-tab-tab_customerInsights", "data-toggle" = "tab",
-                              #          infoBox(value = "Go to Tab2 (this works)",title = "Click me")),
-                             box( fluid = TRUE,
-                                  width = 6,
+                               box( fluid = TRUE,
+                                  width = 6, status = "primary", collapsible = T, solidHeader = T,
                                   title = "Daily Insights",
                                   footer = "Graph Displaying Per Day Revenue or Transaction",
                                   plotlyOutput('plotly_dayInsightsPlot1') %>% withSpinner(color = "#0dc5c1"),
@@ -455,42 +446,35 @@ dashboardPage(
                                               value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
                                   )
                              ),
-                              box( fluid = TRUE,
-                                   width = 6, collapsible = TRUE,
+                              box( fluid = TRUE,  status = "primary", collapsible = T, solidHeader = T,
+                                   width = 6,title = "Hourly Insights",
+                                   footer = "Graph Displaying Hourly Revenue or Transaction",
+                                   
                                    plotlyOutput('plotly_dayInsightsPlot2') %>% withSpinner(color = "#0dc5c1")
                                    
-                                #    shinyjs::hidden
-                                # (
-                                #     sliderInput("sliderDaterange2",
-                                #            "Choose Date Range:",
-                                #            animate = TRUE,
-                                #            width = "100%",
-                                #            min = as.Date("2010-12-01"), max = as.Date("2011-12-09"),
-                                #            value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
-                                #     )
                              ),
                              box(
-                               width = 12,
+                               width = 12,  status = "primary", solidHeader = T, collapsible = T,
                                plotlyOutput('sidePlot2') %>% withSpinner(color = "#0dc5c1")
                              )
                            )),
                    tabItem(tabName = "tab_customerInsights",
                            fluidRow(
                              box(
-                               width = 12,
+                               width = 12,  status = "primary", collapsible = T, solidHeader = T,
                                plotlyOutput('revenuePerCustomer') %>% withSpinner(color =
                                                                                     "#0dc5c1"),
                                
                                verbatimTextOutput("revenuePerCustomerClickInfo")
                              ),
                              box(
-                               width = 12,
+                               width = 12,  status = "primary", collapsible = T, solidHeader = T,
                                plotlyOutput('rfmGraphPlot') %>% withSpinner(color = "#0dc5c1")
                              )
                            )),
                    tabItem(tabName = "tab_locationInsights",
                            fluidRow(
-                             box(width = 12,
+                             box(width = 12,  status = "primary", collapsible = T, solidHeader = T,
                                  plotlyOutput("countryPlotly") %>% withSpinner(color =
                                                                                  "#0dc5c1")
                                  
