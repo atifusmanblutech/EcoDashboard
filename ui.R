@@ -27,17 +27,17 @@ dashboardPage(
                                  )
                                ),
                
-               dashboardSidebar( width = 50, collapsed = TRUE,
+               dashboardSidebar( width = 60, collapsed = TRUE,
                                  sidebarMenu(id = "sidebar",
-                                             menuItem("", tabName = "tab_homePage", icon = icon("home",lib = "font-awesome")),
-                                             menuItem("", tabName = "tab_dayInsights", icon = icon("calendar",lib = "font-awesome") ),
+                                             menuItem("", tabName = "tab_homePage", icon = icon("home","fa-2x",lib = "font-awesome")),
+                                             menuItem("", tabName = "tab_dayInsights", icon = icon("calendar","fa-2x",lib = "font-awesome") ),
                                              
                                              
                                              
-                                             menuItem("", icon = icon("users",lib = "font-awesome"), tabName = "tab_customerInsights"),
+                                             menuItem("", icon = icon("users","fa-2x",lib = "font-awesome"), tabName = "tab_customerInsights"),
                                              
                                            
-                                             menuItem("", icon = icon("globe",lib = "font-awesome"), tabName = "tab_locationInsights"),
+                                             menuItem("", icon = icon("globe","fa-2x",lib = "font-awesome"), tabName = "tab_locationInsights"),
                                              conditionalPanel("input.sidebar === 'tab_locationInsights'",
                                                               uiOutput("selCountry"),
                                                               
@@ -83,7 +83,7 @@ dashboardPage(
                                                               )#end of shinyjs::hidden
                                                               
                                              ),
-                                             menuItem("", icon = icon("product-hunt",lib = "font-awesome"), tabName = "tab_productInsights"),
+                                             menuItem("", icon = icon("product-hunt","fa-2x",lib = "font-awesome"), tabName = "tab_productInsights"),
                                              conditionalPanel("input.sidebar === 'tab_productInsights'",
                                                               uiOutput('productCountryControls') ,
                                                               helpText("Select product to view insights and trends related to the",
@@ -168,20 +168,25 @@ dashboardPage(
                  ),
                  tabItems(
                    tabItem(tabName = "tab_homePage",
-                                  fluidRow(
-                                    tags$div(href="#shiny-tab-tab_customerInsights", fluid = TRUE,
-                                             width = 3,  "data-toggle" = "tab",
-                                             infoBox(value = "Go to Customer Insights",title = "Customer Insights", icon = icon("users",lib = "font-awesome"))),
-                                    tags$div(href="#shiny-tab-tab_productInsights", fluid = TRUE,
-                                             width = 3, "data-toggle" = "tab",
-                                             infoBox(value = "Go to Product Insights",title = "Product Insights", icon = icon("product-hunt",lib = "font-awesome"))),
-                                    tags$div(href="#shiny-tab-tab_locationInsights", fluid = TRUE,
-                                             width = 3, "data-toggle" = "tab",
-                                             infoBox(value = "Go to Location Insights",title = "Location Insights", icon = icon("globe",lib = "font-awesome"))),
-                                    tags$div(href="#shiny-tab-tab_dayInsights", fluid = TRUE,
-                                             width = 3, "data-toggle" = "tab",
-                                             infoBox(value = "Go to Timeline Insights",title = "Timeline Insights",icon = icon("calendar", lib="font-awesome")))
-                                  )
+                           fluidRow(
+                             # tags$div(href="#shiny-tab-tab_customerInsights", fluid = TRUE,
+                             #          width = 3, "data-toggle" = "tab",
+                             #          infoBox(value = "Go to Customer Insights",title = "Customer Insights")),
+                             # tags$div(href="#shiny-tab-tab_productInsights", fluid = TRUE,
+                             #          width = 3, "data-toggle" = "tab",
+                             #          infoBox(value = "Go to Product Insights",title = "Product Insights")),
+                             # tags$div(href="#shiny-tab-tab_locationInsights", fluid = TRUE,
+                             #          width = 3, "data-toggle" = "tab",
+                             #          infoBox(value = "Go to Location Insights",title = "Location Insights")),
+                             # tags$div(href="#shiny-tab-tab_dayInsights", fluid = TRUE,
+                             #          width = 3, "data-toggle" = "tab",
+                             #          infoBox(value = "Go to Timeline Insights",title = "Timeline Insights")),
+                             valueBoxOutput("box_01")%>% withSpinner(color = "#0dc5c1") ,
+                             valueBoxOutput("box_02") ,
+                             valueBoxOutput("box_03") ,
+                             valueBoxOutput("box_04") 
+                             
+                           )
                    ),
 #########Day Insights Tab################
 
