@@ -24,264 +24,17 @@ dashboardPage(
                                             )
                                )),
                
-               dashboardSidebar( width = 350, collapsed = TRUE,
+               dashboardSidebar( width = 50, collapsed = TRUE,
                                  sidebarMenu(id = "sidebar",
-                                             menuItem("Home Page", tabName = "tab_homePage", icon = icon("home",lib = "font-awesome")),
-                                             menuItem("Day Insights", tabName = "tab_dayInsights", icon = icon("chart-bar",lib = "font-awesome") ),
-                                             conditionalPanel("input.sidebar === 'tab_dayInsights'",
-                                                              hr(),
-                                                              h3("Insights",  style = "align:center;text-align:center"),
-                                                              hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                              selectInput(
-                                                                "Segmentation",
-                                                                "Please Select Segmentaion",
-                                                                
-                                                                choices = c("Daily", "Hourly"),
-                                                                1
-                                                              ),
-                                                              # # option 1
-                                                              conditionalPanel(
-                                                                condition = "input.Segmentation == 'Daily'",
-                                                                selectInput(
-                                                                  "segTypeDaily",
-                                                                  "Select Type of Daily Segmentation",
-                                                                  choices = c("Per Day Revenue", "Per Day Transactions")
-                                                                )
-                                                              ),
-                                                              
-                                                              #       # option 2
-                                                              conditionalPanel(
-                                                                condition = "input.Segmentation == 'Hourly'",
-                                                                selectInput(
-                                                                  "segTypeHourly",
-                                                                  "Select Type of Hourly Segmentation",
-                                                                  choices = c("Hourly Revenue", "Hourly Transaction")
-                                                                )
-                                                              ),
-                                                              
-                                                              hr(),
-                                                              shinyjs::hidden(
-                                                                div(id="div_weekdayMarketing",
-                                                                    
-                                                                    
-                                                                    h3("Marketing", style = "align:center;text-align:center"),
-                                                                    hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                                    selectInput(
-                                                                      "WeekdayMarketingChoice",
-                                                                      "Please Select Marketing Type",
-                                                                      choices = c("Email Marketing" = "emailMarketing", "SMS Marketing" = "smsMarketing"), selected = "smsMarketing"),
-                                                                    
-                                                                    
-                                                                    br(),
-                                                                    
-                                                                    #### Condition for SMS Marketing
-                                                                    conditionalPanel(
-                                                                      condition = "input.WeekdayMarketingChoice == 'smsMarketing'",
-                                                                      selectInput("choice_autoManualSMS",
-                                                                                  "Auto or Manual",
-                                                                                  choices = c("Automatic","Manual"),selected = "Automatic"),
-                                                                      
-                                                                      conditionalPanel("input.choice_autoManualSMS == 'Manual'",
-                                                                                       uiOutput("dayFilterControlForSMS"),
-                                                                                       helpText("Note: SMS will be sent to all customers on selected Days"),
-                                                                                       br(),
-                                                                                       textAreaInput(
-                                                                                         "textSmsMarketingWeekday",
-                                                                                         "Enter campaign text or offers to send: ",
-                                                                                         "Sms Marketing Text",
-                                                                                         
-                                                                                         "100%",
-                                                                                         "100px",
-                                                                                         resize = "vertical"
-                                                                                       ),
-                                                                                       helpText("Note: Enter a custom offer that you want to send!"),
-                                                                                       br(),
-                                                                                       
-                                                                                       actionButton(
-                                                                                         "manualSmsCampaign",
-                                                                                         " Launch SMS Campaign",
-                                                                                         icon("envelope")
-                                                                                       )
-                                                                      ),
-                                                                      
-                                                                      
-                                                                      conditionalPanel("input.choice_autoManualSMS == 'Automatic'",
-                                                                                       br(),
-                                                                                       actionButton("maxSmsCampaign", "Campaign for Max Revenue Day"),
-                                                                                       helpText("Note: Campaigns will lauch for day with Max Revenue"),
-                                                                                       
-                                                                                       br(),
-                                                                                       actionButton("minSmsCampaign", "Campaign for Min Revenue Day"),
-                                                                                       
-                                                                                       helpText("Note: Campaigns will lauch for day with Max Revenue")
-                                                                      )
-                                                                      
-                                                                      
-                                                                      
-                                                                    ),
-                                                                    
-                                                                    #### Condition for Email Marketing
-                                                                    conditionalPanel(
-                                                                      condition = "input.WeekdayMarketingChoice == 'emailMarketing'",
-                                                                      selectInput(
-                                                                        "choice_autoManualEmail",
-                                                                        "Auto or Manual",
-                                                                        choices = c("Automatic","Manual"),1
-                                                                      )
-                                                                      ,
-                                                                      conditionalPanel("input.choice_autoManualEmail == 'Manual'",
-                                                                                       
-                                                                                       
-                                                                                       uiOutput("dayFilterControlForEmail"),
-                                                                                       helpText("Note: Emails will be sent to all customers on selected Days"),
-                                                                                       br(),
-                                                                                       textAreaInput(
-                                                                                         "textEmailMarketingWeekday",
-                                                                                         "Enter campaign text or offers to send: ",
-                                                                                         "Special Discount Offers!",
-                                                                                         "100%",
-                                                                                         "100px",
-                                                                                         resize = "vertical"
-                                                                                       ),
-                                                                                       helpText("Note: Enter a custom offer that you want to send!"),
-                                                                                       br(),
-                                                                                       
-                                                                                       actionButton(
-                                                                                         "manualEmailCampaign",
-                                                                                         "Launch Email Campaign",
-                                                                                         icon("envelope")
-                                                                                         
-                                                                                       )
-                                                                      ),
-                                                                      hr(),
-                                                                      conditionalPanel("input.choice_autoManualEmail == 'Automatic'",
-                                                                                       actionButton("maxEmailCampaign", "Campaign for Max Revenue Day"),
-                                                                                       helpText("Note: Campaigns will launch for day with Max Revenue"),
-                                                                                       
-                                                                                       
-                                                                                       br(),
-                                                                                       actionButton("minEmailCampaign", "Campaign for Min Revenue Day"),
-                                                                                       helpText("Note: Campaigns will lauch for day with Min Revenue"),
-                                                                                       br()
-                                                                      )
-                                                                      
-                                                                    )   
-                                                                )
-                                                              )
-                                                              
-                                             ),
-                                             
-                                             menuItem("Individual Customer Insights", icon = icon("users",lib = "font-awesome"), tabName = "tab_customerInsights"),
-                                             conditionalPanel("input.sidebar === 'tab_customerInsights'",
-                                                              hr(),
-                                                              h3("Individual Insights", style = "align:center;text-align:center;"),
-                                                              hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                              sliderInput("numOfCustomers", "Number of Customers:",
-                                                                          min = 0, max = 100,
-                                                                          value = 20),
-                                                              shinyjs::hidden(
-                                                                div(
-                                                                  id="div_personalizedCampaign",
-                                                                  br(),
-                                                                  actionButton(
-                                                                    "cusPersonalizedCampaignEmail",
-                                                                    "Personalised Email Campaign",
-                                                                    icon("envelope")
-                                                                  ),
-                                                                  helpText(
-                                                                    "Note: Selecting this button will launch an Email Campaign",
-                                                                    br(),
-                                                                    "for top Customers"
-                                                                    
-                                                                  ),
-                                                                  
-                                                                  br(),
-                                                                  actionButton(
-                                                                    "cusPersonalizedCampaignSms",
-                                                                    "Personalised SMS Campaign",
-                                                                    icon("envelope")
-                                                                  ),
-                                                                  helpText(
-                                                                    "Note: Selecting this button will launch an SMS Campaign",
-                                                                    br(),
-                                                                    "for top Customers"
-                                                                  ),
-                                                                  
-                                                                  
-                                                                  br(),
-                                                                  hr()    
-                                                                )
-                                                              ),
-                                                              
-                                                              h3("Classified Insights", style = "align:center;text-align:center;"),
-                                                              hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                              uiOutput("customerRFMchoice") ,
-                                                              helpText(
-                                                                "Note: Selecting a Classification will display graph of",
-                                                                br(),
-                                                                "customers of that class in all countries"
-                                                              ),
-                                                              
-                                                              
-                                                              hr(),
-                                                              shinyjs::hidden(
-                                                                div(id="div_customerMarketing",
-                                                                    h3("Marketing", style = "align:center;text-align:center;"),
-                                                                    hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                                    selectInput(
-                                                                      "CustomerMarketingChoice",
-                                                                      "Please Select Marketing Type",
-                                                                      choices = c("Email Marketing" = "emailMarketing", "SMS Marketing" = "smsMarketing"),
-                                                                      2
-                                                                    ),
-                                                                    helpText("Note: Select how you want to do marketing"),
-                                                                    br(),
-                                                                    
-                                                                    #### Condition for SMS Marketing
-                                                                    conditionalPanel(
-                                                                      condition = "input.CustomerMarketingChoice == 'smsMarketing'",
-                                                                      
-                                                                      textAreaInput(
-                                                                        "textSmsMarketing",
-                                                                        "Enter campaign text or offers to send: ",
-                                                                        "Special Discount Offers!",
-                                                                        "100%",
-                                                                        "100px",
-                                                                        resize = "vertical"
-                                                                      ),
-                                                                      
-                                                                      actionButton("manualSmsCampaignCustomer", "Launch SMS Campaign", icon("envelope")),
-                                                                      hr()
-                                                                      
-                                                                      
-                                                                    ),
-                                                                    
-##########
-
-                                                                    conditionalPanel(
-                                                                      condition = "input.CustomerMarketingChoice == 'emailMarketing'",
-                                                                      
-                                                                      textAreaInput(
-                                                                        "textEmailMarketing",
-                                                                        "Enter campaign text or offers to send: ",
-                                                                        "Special Discount Offers!",
-                                                                        "100%",
-                                                                        "100px",
-                                                                        resize = "vertical"
-                                                                      ),
-                                                                      actionButton("manualEmailCampaignCustomer", "Launch Email Campaign",  icon("envelope")),
-                                                                      hr()
-                                                                      
-                                                                    )      
-                                                                    
-                                                                )#end of div_customerMarketing
-                                                              )#end of shinyjs::hidden
-                                                              
-                                                              
-                                             ),
+                                             menuItem("", tabName = "tab_homePage", icon = icon("home",lib = "font-awesome")),
+                                             menuItem("", tabName = "tab_dayInsights", icon = icon("calendar",lib = "font-awesome") ),
                                              
                                              
-                                             menuItem("Location Centric Insights", icon = icon("globe",lib = "font-awesome"), tabName = "tab_locationInsights"),
+                                             
+                                             menuItem("", icon = icon("users",lib = "font-awesome"), tabName = "tab_customerInsights"),
+                                             
+                                           
+                                             menuItem("", icon = icon("globe",lib = "font-awesome"), tabName = "tab_locationInsights"),
                                              conditionalPanel("input.sidebar === 'tab_locationInsights'",
                                                               uiOutput("selCountry"),
                                                               
@@ -327,7 +80,7 @@ dashboardPage(
                                                               )#end of shinyjs::hidden
                                                               
                                              ),
-                                             menuItem("Product Insights", icon = icon("product-hunt",lib = "font-awesome"), tabName = "tab_productInsights"),
+                                             menuItem("", icon = icon("product-hunt",lib = "font-awesome"), tabName = "tab_productInsights"),
                                              conditionalPanel("input.sidebar === 'tab_productInsights'",
                                                               uiOutput('productCountryControls') ,
                                                               helpText("Select product to view insights and trends related to the",
@@ -378,7 +131,7 @@ dashboardPage(
                dashboardBody(
                  useShinyjs(),
                  tags$head(
-
+                   tags$script(HTML("$('body').addClass('sidebar-mini');")),
                    tags$script(src="js/script.js"),
                    tags$style(
                    HTML(
@@ -414,7 +167,7 @@ dashboardPage(
                    tabItem(tabName = "tab_homePage",
                                   fluidRow(
                                     tags$div(href="#shiny-tab-tab_customerInsights", fluid = TRUE,
-                                             width = 3, "data-toggle" = "tab",
+                                             width = 3,  "data-toggle" = "tab",
                                              infoBox(value = "Go to Customer Insights",title = "Customer Insights", icon = icon("users",lib = "font-awesome"))),
                                     tags$div(href="#shiny-tab-tab_productInsights", fluid = TRUE,
                                              width = 3, "data-toggle" = "tab",
@@ -424,84 +177,352 @@ dashboardPage(
                                              infoBox(value = "Go to Location Insights",title = "Location Insights", icon = icon("globe",lib = "font-awesome"))),
                                     tags$div(href="#shiny-tab-tab_dayInsights", fluid = TRUE,
                                              width = 3, "data-toggle" = "tab",
-                                             infoBox(value = "Go to Timeline Insights",title = "Timeline Insights"))
+                                             infoBox(value = "Go to Timeline Insights",title = "Timeline Insights",icon = icon("calendar", lib="font-awesome")))
                                   )
                    ),
-                                    
+#########Day Insights Tab################
+
                    tabItem(tabName = "tab_dayInsights",
                            fluidRow(
                                box( fluid = TRUE,
                                   width = 6, status = "primary", collapsible = T, solidHeader = T,
                                   title = "Daily Insights",
-                                  footer = "Graph Displaying Per Day Revenue or Transaction",
-                                  plotlyOutput('plotly_dayInsightsPlot1') %>% withSpinner(color = "#0dc5c1"),
                                   
-                                  shinyjs::hidden
-                                  (
-                                  sliderInput("sliderDaterange",
-                                              "Choose Date Range:",
-                                              animate = TRUE,
-                                              width = "100%",
-                                              min = as.Date("2010-12-01"), max = as.Date("2011-12-09"),
-                                              value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
+                                  tabBox(width=12,id="tabBox_next_previous",
+                                         tabPanel("Revenue",
+                                                  plotlyOutput('plotly_dailyPlot_Revenue') %>% withSpinner(color = "#0dc5c1")
+                                                  ,
+                                                  shinyjs::hidden
+                                                  (
+                                                    sliderInput("sliderDaterange",
+                                                                "Choose Date Range:",
+                                                                animate = TRUE,
+                                                                width = "100%",
+                                                                min = as.Date("2010-12-01"), max = as.Date("2011-12-09"),
+                                                                value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
+                                                  )
+
+                                                  ),
+                                         tabPanel("Transactions",
+                                                  plotlyOutput('plotly_dailyPlot_Transactions') %>% withSpinner(color = "#0dc5c1"),
+                                                  
+                                                  shinyjs::hidden
+                                                  (
+                                                    sliderInput("slider_Daterange_Transactions",
+                                                                "Choose Date Range:",
+                                                                animate = TRUE,
+                                                                width = "100%",
+                                                                min = as.Date("2010-12-01"), max = as.Date("2011-12-09"),
+                                                                value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
+                                                  )
+                                                  
+                                                  
+                                                  )
                                   )
+                                  
                              ),
                               box( fluid = TRUE,  status = "primary", collapsible = T, solidHeader = T,
                                    width = 6,title = "Hourly Insights",
-                                   footer = "Graph Displaying Hourly Revenue or Transaction",
                                    
-                                   plotlyOutput('plotly_dayInsightsPlot2') %>% withSpinner(color = "#0dc5c1")
+                                   tabBox(width=12,id="tabBox_hourly",
+                                          tabPanel("Revenue",
+                                                   plotlyOutput('plotly_hourlyPlot_Revenue') %>% withSpinner(color = "#0dc5c1"),
+                                                   
+                                                   shinyjs::hidden
+                                                   (
+                                                     sliderInput("slider_Daterange_HourlyR",
+                                                                 "Choose Date Range:",
+                                                                 animate = TRUE,
+                                                                 width = "100%",
+                                                                 min = as.Date("2010-12-01"), max = as.Date("2011-12-09"),
+                                                                 value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
+                                                   )
+                                                   
+                                          ),
+                                          tabPanel("Transactions",
+                                                   plotlyOutput('plotly_hourlyPlot_Transactions') %>% withSpinner(color = "#0dc5c1"),
+                                                   
+                                                   shinyjs::hidden
+                                                   (
+                                                     sliderInput("slider_Daterange_HourlyT",
+                                                                 "Choose Date Range:",
+                                                                 animate = TRUE,
+                                                                 width = "100%",
+                                                                 min = as.Date("2010-12-01"), max = as.Date("2011-12-09"),
+                                                                 value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
+                                                   )
+                                                   
+                                          )
+                                   )
                                    
                              ),
                              box(
-                               width = 12,  status = "primary", solidHeader = T, collapsible = T,
+                               width = 6,  status = "primary", solidHeader = T, collapsible = T, title = "Overall Revenue Trend by Date",
                                plotlyOutput('sidePlot2') %>% withSpinner(color = "#0dc5c1")
+                             ),
+                             box(
+                               width = 6,  status = "warning", solidHeader = T, collapsible = T, title = "Marketing",
+                               shinyjs::hidden(
+                                 div(id="div_weekdayMarketing",
+                                     
+                                     
+                                     h3("Marketing", style = "align:center;text-align:center"),
+                                     hr(style ="border-top: dotted 1px #FFFFFF"),
+                                     selectInput(
+                                       "WeekdayMarketingChoice",
+                                       "Please Select Marketing Type",
+                                       choices = c("Email Marketing" = "emailMarketing", "SMS Marketing" = "smsMarketing"), selected = "smsMarketing"),
+                                     
+                                     
+                                     br(),
+                                     
+                                     #### Condition for SMS Marketing
+                                     conditionalPanel(
+                                       condition = "input.WeekdayMarketingChoice == 'smsMarketing'",
+                                       selectInput("choice_autoManualSMS",
+                                                   "Auto or Manual",
+                                                   choices = c("Automatic","Manual"),selected = "Automatic"),
+                                       
+                                       conditionalPanel("input.choice_autoManualSMS == 'Manual'",
+                                                        uiOutput("dayFilterControlForSMS"),
+                                                        helpText("Note: SMS will be sent to all customers on selected Days"),
+                                                        br(),
+                                                        textAreaInput(
+                                                          "textSmsMarketingWeekday",
+                                                          "Enter campaign text or offers to send: ",
+                                                          "Sms Marketing Text",
+                                                          
+                                                          "100%",
+                                                          "100px",
+                                                          resize = "vertical"
+                                                        ),
+                                                        helpText("Note: Enter a custom offer that you want to send!"),
+                                                        br(),
+                                                        
+                                                        actionButton(
+                                                          "manualSmsCampaign",
+                                                          " Launch SMS Campaign",
+                                                          icon("envelope")
+                                                        )
+                                       ),
+                                       
+                                       
+                                       conditionalPanel("input.choice_autoManualSMS == 'Automatic'",
+                                                        br(),
+                                                        actionButton("maxSmsCampaign", "Campaign for Max Revenue Day"),
+                                                        helpText("Note: Campaigns will lauch for day with Max Revenue"),
+                                                        
+                                                        br(),
+                                                        actionButton("minSmsCampaign", "Campaign for Min Revenue Day"),
+                                                        
+                                                        helpText("Note: Campaigns will lauch for day with Max Revenue")
+                                       )
+                                       
+                                       
+                                       
+                                     ),
+                                     
+                                     #### Condition for Email Marketing
+                                     conditionalPanel(
+                                       condition = "input.WeekdayMarketingChoice == 'emailMarketing'",
+                                       selectInput(
+                                         "choice_autoManualEmail",
+                                         "Auto or Manual",
+                                         choices = c("Automatic","Manual"),1
+                                       )
+                                       ,
+                                       conditionalPanel("input.choice_autoManualEmail == 'Manual'",
+                                                        
+                                                        
+                                                        uiOutput("dayFilterControlForEmail"),
+                                                        helpText("Note: Emails will be sent to all customers on selected Days"),
+                                                        br(),
+                                                        textAreaInput(
+                                                          "textEmailMarketingWeekday",
+                                                          "Enter campaign text or offers to send: ",
+                                                          "Special Discount Offers!",
+                                                          "100%",
+                                                          "100px",
+                                                          resize = "vertical"
+                                                        ),
+                                                        helpText("Note: Enter a custom offer that you want to send!"),
+                                                        br(),
+                                                        
+                                                        actionButton(
+                                                          "manualEmailCampaign",
+                                                          "Launch Email Campaign",
+                                                          icon("envelope")
+                                                          
+                                                        )
+                                       ),
+                                       hr(),
+                                       conditionalPanel("input.choice_autoManualEmail == 'Automatic'",
+                                                        actionButton("maxEmailCampaign", "Campaign for Max Revenue Day"),
+                                                        helpText("Note: Campaigns will launch for day with Max Revenue"),
+                                                        
+                                                        
+                                                        br(),
+                                                        actionButton("minEmailCampaign", "Campaign for Min Revenue Day"),
+                                                        helpText("Note: Campaigns will lauch for day with Min Revenue"),
+                                                        br()
+                                       )
+                                       
+                                     )   
+                                 )
+                               )
+                               
+                               
                              )
-                           )),
+                           )),#end of day tab
+#########Customer Insights Tab################
+
                    tabItem(tabName = "tab_customerInsights",
                            fluidRow(
                              box(
-                               width = 12,  status = "primary", collapsible = T, solidHeader = T,
+                               width = 12,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue per Customer",
+                               sliderInput("numOfCustomers", "Number of Customers:",
+                                           min = 0, max = 100,
+                                           value = 20),
                                plotlyOutput('revenuePerCustomer') %>% withSpinner(color =
                                                                                     "#0dc5c1"),
                                
                                verbatimTextOutput("revenuePerCustomerClickInfo")
                              ),
                              box(
-                               width = 12,  status = "primary", collapsible = T, solidHeader = T,
+                               width = 8,  status = "primary", collapsible = T, solidHeader = T, title = "RFM Plot",
+                               uiOutput("customerRFMchoice") ,
+                               helpText(
+                                 "Note: Selecting a Classification will display graph of",
+                                 br(),
+                                 "customers of that class in all countries"
+                               ),
                                plotlyOutput('rfmGraphPlot') %>% withSpinner(color = "#0dc5c1")
+                               
+                             ),
+                             box(
+                               width = 4,  status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
+                               shinyjs::hidden(
+                                 div(
+                                   id="div_personalizedCampaign",
+                                   br(),
+                                   actionButton(
+                                     "cusPersonalizedCampaignEmail",
+                                     "Personalised Email Campaign",
+                                     icon("envelope"),width = '100%'
+                                   ),
+                                   helpText(
+                                     "Note: Selecting this button will launch an Email Campaign",
+                                     br(),
+                                     "for top Customers"
+
+                                   ),
+
+                                   br(),
+                                   actionButton(
+                                     "cusPersonalizedCampaignSms",
+                                     "Personalised SMS Campaign",
+                                     icon("envelope"),width = '100%'
+                                   ),
+                                   helpText(
+                                     "Note: Selecting this button will launch an SMS Campaign",
+                                     br(),
+                                     "for top Customers"
+                                   )
+                                 )),
+
+                                   br(),
+                                   hr(),
+                                   shinyjs::hidden(
+                                     div(id="div_customerMarketing",
+                                         h3("Marketing", style = "align:center;text-align:center;"),
+                                         hr(style ="border-top: dotted 1px #FFFFFF"),
+                                         selectInput(
+                                           "CustomerMarketingChoice",
+                                           "Please Select Marketing Type",
+                                           choices = c("Email Marketing" = "emailMarketing", "SMS Marketing" = "smsMarketing"),
+                                           2
+                                         ),
+                                         helpText("Note: Select how you want to do marketing"),
+                                         br(),
+                                         
+                                         #### Condition for SMS Marketing
+                                         conditionalPanel(
+                                           condition = "input.CustomerMarketingChoice == 'smsMarketing'",
+                                           
+                                           textAreaInput(
+                                             "textSmsMarketing",
+                                             "Enter campaign text or offers to send: ",
+                                             "Special Discount Offers!",
+                                             "100%",
+                                             "100px",
+                                             resize = "vertical"
+                                           ),
+                                           
+                                           actionButton("manualSmsCampaignCustomer",
+                                                        "Launch SMS Campaign", icon("envelope"),
+                                                         width = '100%'  ),
+                                           hr()
+                                           
+                                           
+                                         ),
+                                         
+                                         
+                                         conditionalPanel(
+                                           condition = "input.CustomerMarketingChoice == 'emailMarketing'",
+                                           
+                                           textAreaInput(
+                                             "textEmailMarketing",
+                                             "Enter campaign text or offers to send: ",
+                                             "Special Discount Offers!",
+                                             "100%",
+                                             "100px",
+                                             resize = "vertical"
+                                           ),
+                                           actionButton("manualEmailCampaignCustomer", "Launch Email Campaign",  icon("envelope"), width = '100%'),
+                                           hr()
+                                           
+                                         )      
+                                         
+                                     )#end of div_customerMarketing
+                                   )#end of shinyjs::hidden
+                              
+
+                               
                              )
-                           )),
+                           )),#end of customer insight tab
+#########Location Insights Tab################
+
                    tabItem(tabName = "tab_locationInsights",
                            fluidRow(
-                             box(width = 12,  status = "primary", collapsible = T, solidHeader = T,
+                             box(width = 12,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue by Location over Time",
                                  plotlyOutput("countryPlotly") %>% withSpinner(color =
                                                                                  "#0dc5c1")
                                  
                              ),
-                             box(width = 12,
+                             box(width = 12, title = "Top Products in Selected Location", status = "primary", collapsible = T, solidHeader = T,
                                  plotlyOutput("countryTransPlotly") %>% withSpinner(color ="#0dc5c1")
                              ),
-                             box(width=12,
-                                 
-                                 plotlyOutput("transactionPlotly") %>% withSpinner(color =
-                                                                                     "#0dc5c1")
-                                 
-                                 
+                             
+                             box(width = 12,  title = "Map Displaying Revenue Generated Per Location", status = "primary", collapsible = T, solidHeader = T,
+                                 br(),
+                                 leafletOutput("mymap", width = "90%") %>% withSpinner(color =
+                                                                                          "#0dc5c1")
                              )
                            )),
+#########Product Insights Tab################
+
                    tabItem(tabName = "tab_productInsights",
                            fluidRow(
-                             box(width = 12,
+                             box(width = 12, title = "Top 10 Revenue Generating Products", status = "primary", collapsible = T, solidHeader = T,
                                  plotlyOutput('prodCountryGraph') %>% withSpinner(color =
                                                                                     "#0dc5c1")
                              ),
-                             box(width = 12,
+                             box(width = 12, title = "Revenue of Product in Selected Location", status = "primary", collapsible = T, solidHeader = T,
                                  plotlyOutput('prodCountryGraph1') %>% withSpinner(color =
                                                                                      "#0dc5c1")
                              ),
-                             box(width = 12,
-                                 h3("Map Displaying Revenue Generated Per Location",style = "align:center;text-align:center;text-shadow: 2px 2px #FFFFFF"),
+                             box(width = 12,title = "Map Displaying Revenue Generated Per Location", status = "primary", collapsible = T, solidHeader = T,
+                                 #h3("Map Displaying Revenue Generated Per Location",style = "align:center;text-align:center;text-shadow: 2px 2px #FFFFFF"),
                                  br(),
                                  leafletOutput("mymap1", width = "90%") %>% withSpinner(color =
                                                                                           "#0dc5c1")
