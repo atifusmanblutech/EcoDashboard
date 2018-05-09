@@ -4,7 +4,9 @@ library(shinydashboard)
 dashboardPage( 
                 
                
-               dashboardHeader(title = "Campaign Launch Demo", titleWidth = 350,
+               dashboardHeader(title = "Campaign Launch Demo", titleWidth = 350,tags$li(class = "dropdown",
+                                                                                        actionButton("home", "Home", icon("house"),
+                                                                                        style = "color: #FFF; background-color: Transparent; border-color: Transparent; font-size: 20px")),
                                dropdownMenu(type = "messages",
                                             messageItem(
                                               from = "Sales Dept",
@@ -22,7 +24,8 @@ dashboardPage(
                                               icon = icon("life-ring"),
                                               time = "2014-12-01"
                                             )
-                               )),
+                                 )
+                               ),
                
                dashboardSidebar( width = 50, collapsed = TRUE,
                                  sidebarMenu(id = "sidebar",
