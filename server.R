@@ -691,40 +691,26 @@ shinyServer(function(input, output, session) {
   # 
   # 
   
-  
-  output$plotly_dayInsightsPlot1<- renderPlotly({
+  ##########plotly_dailyPlot_Revenue#########
+  output$plotly_dailyPlot_Revenue<- renderPlotly({
     shinyjs::show("sliderDaterange")
     shinyjs::show("div_weekdayMarketing")
     
     
-    segmenationType <- input$Segmentation
+  #  segmenationType <- input$Segmentation
     
     vectorInput <- input$sliderDaterange
-    
-    # showNotification(vectorInput2,type = "Message")
-    
     filteredWeekdayDF <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2]))
-    # slideredDF <- dayRangeControlInput()
     
     weekdayDF2 <- filteredWeekdayDF %>%
       group_by(date, dayOfWeek) %>%
       summarise(revenue = sum(lineTotal), transactions = n_distinct(InvoiceNo)) %>%
       mutate(aveOrdVal = (round((revenue / transactions),2))) %>%
       ungroup()
-    #filter(data, as.Date(date) >= as.Date("2016-07-18") & as.Date(data$date) <= as.Date("2016-07-18"))
     
     revenueDayTitle <- paste("Daily Revenue between ", vectorInput[1], " and ", vectorInput[2])
-    transactionsDayTitle <- paste("Daily Transactions between ", vectorInput[1], " and ", vectorInput[2])
-    
-    
     
     print(
-      
-      if (segmenationType == "Daily") {
-        
-        segTypeDaily <- input$segTypeDaily
-        
-        if (segTypeDaily == "Per Day Revenue") {
           
           ggplotly(weekdayRevenueGraph <- weekdayDF2 %>%
                      group_by(dayOfWeek) %>%
@@ -732,58 +718,38 @@ shinyServer(function(input, output, session) {
                      ggplot(aes(x=dayOfWeek,y=revenue, fill=dayOfWeek, text= paste(" Day :",dayOfWeek, "<br>", "Revenue (£):",
                                                                                    revenue)))+geom_col()+labs(x='Day of Week', y='Revenue (£)', title=revenueDayTitle)+theme(axis.text.y = element_text(face="bold", color="#000000",
                                                                                                                                                                                                         size=10, angle=45)),tooltip = c("text") )
-          #x=reorder(dayOfWeek,-revenue)
-          
-          #   ggplotly(weekdayRevenueGraph <- weekdayDF %>%
-          #              group_by(dayOfWeek) %>%
-          #              summarise(revenue=sum(revenue)) %>%
-          #              ggplot(aes(x=reorder(dayOfWeek,-revenue),y=revenue, fill=dayOfWeek, text= paste(" Day :",dayOfWeek, "<br>", "Revenue (£):", 
-          #                                                                                              revenue)))+geom_col()+labs(x='Day of Week', y='Revenue (£)', title='Revenue by Day of Week')+theme(axis.text.y = element_text(face="bold", color="#000000", 
-          #                                                                                                                                                                                                                            size=10, angle=45)),tooltip = c("text"),width = plotWidth, height = plotHeight )
-          # 
-        }
-        else if (segTypeDaily == "Per Day Transactions")
-        {
-          ggplotly(weekdayTransactions <- weekdayDF2 %>%
+           
+      
+    )
+    
+  })
+  
+  ##########plotly_dailyPlot_Revenue#########
+  output$plotly_dailyPlot_Transactions<- renderPlotly({
+    shinyjs::show("slider_Daterange_Transactions")
+    
+    vectorInput <- input$slider_Daterange_Transactions
+    filteredWeekdayDF <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2]))
+    
+    weekdayDF2 <- filteredWeekdayDF %>%
+      group_by(date, dayOfWeek) %>%
+      summarise(revenue = sum(lineTotal), transactions = n_distinct(InvoiceNo)) %>%
+      mutate(aveOrdVal = (round((revenue / transactions),2))) %>%
+      ungroup()
+    
+    transactionsDayTitle <- paste("Daily Transactions between ", vectorInput[1], " and ", vectorInput[2])
+    
+    print(
+  
+              ggplotly(weekdayTransactions <- weekdayDF2 %>%
                      group_by(dayOfWeek) %>%
                      summarise(trans= sum(transactions)) %>%
                      ggplot(aes(x=reorder(dayOfWeek,-trans), y = trans, fill=dayOfWeek, text= paste(" Day: ", dayOfWeek, "<br>", "Transactions: ", trans ))) + geom_col(position = "stack") +
                      labs(x = 'Date',
                           y = 'Transactions',
                           title = transactionsDayTitle), tooltip = c("text"))
-        }
-        
-        
-      }
-      else if (segmenationType == "Hourly")
-      {
-        segTypeHourly <- input$segTypeHourly
-        
-        if (segTypeHourly == "Hourly Revenue")
-        {
-          ggplotly(hourlyRevenueGraph <- custData %>%
-                     group_by(hourOfDay) %>%
-                     summarise(revenue = sum(lineTotal)) %>%
-                     ggplot(aes(x=reorder(hourOfDay,-revenue), y = revenue, fill=hourOfDay, text= paste(" Hour of Day: ", hourOfDay,"<br>", "Revenue (£): ", revenue))) + geom_col() + labs(x = 'Hour Of Day',
-                                                                                                                                                                                            y = 'Revenue (£)',
-                                                                                                                                                                                            title = 'Revenue by Hour Of Day'), tooltip = c("text"),width = plotWidth, height = plotHeight)
+
           
-          
-        }
-        else if (segTypeHourly == "Hourly Transaction")
-        {
-          ggplotly(hourlyTransactionGRaph <- custData %>%
-                     group_by(hourOfDay) %>%
-                     summarise(transactions = n_distinct(InvoiceNo)) %>%
-                     ggplot(aes(x=reorder(hourOfDay,-transactions), y = transactions, fill=hourOfDay, text = paste(" Hour of Day: ", hourOfDay, "<br>", "Transactions: ", transactions))) + geom_col() + labs(x = 'Hour Of Day',
-                                                                                                                                                                                                              y = 'Number of Transactions',
-                                                                                                                                                                                                              title = 'Transactions by Hour Of Day'), tooltip = c("text"),width = plotWidth, height = plotHeight)
-          
-          
-        }
-      }
-      
-      
     )
     
   })
@@ -791,64 +757,54 @@ shinyServer(function(input, output, session) {
   ########## 
   
   
-  output$plotly_dayInsightsPlot2 <- renderPlotly({
-    # shinyjs::show("sliderDaterange")
-    # shinyjs::show("div_weekdayMarketing")
-    # 
-    # 
-    # segmenationType <- input$Segmentation
-    # 
-    # vectorInput <- input$sliderDaterange
-    # 
-    # 
-    # filteredWeekdayDF <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2]))
-    # 
-    # weekdayDF2 <- filteredWeekdayDF %>%
-    #   group_by(date, dayOfWeek) %>%
-    #   summarise(revenue = sum(lineTotal), transactions = n_distinct(InvoiceNo)) %>%
-    #   mutate(aveOrdVal = (round((revenue / transactions),2))) %>%
-    #   ungroup()
-    # #filter(data, as.Date(date) >= as.Date("2016-07-18") & as.Date(data$date) <= as.Date("2016-07-18"))
-    # 
-    # revenueDayTitle <- paste("Daily Revenue between ", vectorInput[1], " and ", vectorInput[2])
-    # transactionsDayTitle <- paste("Daily Transactions between ", vectorInput[1], " and ", vectorInput[2])
-    # 
-    segTypeHourly <- "Hourly Revenue" #input$segTypeHourly
+  output$plotly_hourlyPlot_Revenue <- renderPlotly({
+    shinyjs::show("slider_Daterange_HourlyR")
+    
+    vectorInput <- input$slider_Daterange_HourlyR
+    
+    
+    filteredWeekdayDF <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2]))
+    
+
+    title_hourlyTrevenue <- paste("Hourly Revenue between ", vectorInput[1], " and ", vectorInput[2])
     
     print(
-      
-     
-        
-        
-        if (segTypeHourly == "Hourly Revenue")
-        {
-          ggplotly(hourlyRevenueGraph <- custData %>%
+          ggplotly(hourlyRevenueGraph <- filteredWeekdayDF %>%
                      group_by(hourOfDay) %>%
                      summarise(revenue = sum(lineTotal)) %>%
-                     ggplot(aes(x=reorder(hourOfDay,-revenue), y = revenue, fill=hourOfDay, text= paste(" Hour of Day: ", hourOfDay,"<br>", "Revenue (£): ", revenue))) + geom_col() + labs(x = 'Hour Of Day',
+                     ggplot(aes(x=reorder(hourOfDay,-revenue), y = revenue, fill=hourOfDay, text= paste(" Hour of Day: ", hourOfDay,":00 hrs<br>", "Revenue ($): ", revenue))) + geom_col() + labs(x = 'Hour Of Day',
                                                                                                                                                                                             y = 'Revenue (£)',
-                                                                                                                                                                                            title = 'Revenue by Hour Of Day'), tooltip = c("text"))
+                                                                                                                                                                                            title = title_hourlyTrevenue), tooltip = c("text"))
           
           
-        }
-        else if (segTypeHourly == "Hourly Transaction")
-        {
-          ggplotly(hourlyTransactionGRaph <- custData %>%
-                     group_by(hourOfDay) %>%
-                     summarise(transactions = n_distinct(InvoiceNo)) %>%
-                     ggplot(aes(x=reorder(hourOfDay,-transactions), y = transactions, fill=hourOfDay, text = paste(" Hour of Day: ", hourOfDay, "<br>", "Transactions: ", transactions))) + geom_col() + labs(x = 'Hour Of Day',
-                                                                                                                                                                                                              y = 'Number of Transactions',
-                                                                                                                                                                                                              title = 'Transactions by Hour Of Day'), tooltip = c("text"))
-          
-          
-        }
-      
-      
-      
     )
     
   })
   
+  output$plotly_hourlyPlot_Transactions <- renderPlotly({
+    shinyjs::show("slider_Daterange_HourlyT")
+     
+    vectorInput <- input$slider_Daterange_HourlyT
+
+
+    filteredWeekdayDF <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2]))
+
+
+    transactionsHourlyTitle <- paste("Hourly Transactions between ", vectorInput[1], " and ", vectorInput[2])
+    
+    print(
+          ggplotly(hourlyTransactionGRaph <- filteredWeekdayDF %>%
+                     group_by(hourOfDay) %>%
+                     summarise(transactions = n_distinct(InvoiceNo)) %>%
+                     ggplot(aes(x=reorder(hourOfDay,-transactions), y = transactions, fill=hourOfDay, text = paste(" Hour of Day: ", hourOfDay, "<br>", "Transactions: ", transactions))) + geom_col() + labs(x = 'Hour Of Day',
+                                                                                                                                                                                                              y = 'Number of Transactions',
+                                                                                                                                                                                                              title = transactionsHourlyTitle), tooltip = c("text"))
+
+
+      
+      )
+    
+  })
   
   
   ###Automatic trigger###
@@ -1148,7 +1104,7 @@ shinyServer(function(input, output, session) {
     
     p <- ggplot(topFiveCountrySummaryDF, aes(x = date , y = revenue, color= Country, group = 1, text = paste('Revenue ($):', revenue,
                                                                                                              '<br>Date: ', as.Date(date),
-                                                                                                             '<br>Location: ', Country))) + geom_line() + labs(x = 'Location', y = 'Revenue (£)', color= 'Location', title = 'Revenue by Location over Time')
+                                                                                                             '<br>Location: ', Country))) + geom_line() + labs(x = 'Location', y = 'Revenue ($)', color= 'Location', title = 'Revenue by Location over Time')
     
     
     pp <- ggplotly(p, width = plotWidth, height = plotHeight, tooltip = c("text"))
@@ -1479,26 +1435,26 @@ shinyServer(function(input, output, session) {
   
   ########cOUNTRY GRAPH####
   
-  output$transactionPlotly <- renderPlotly({
-      print(ggplotly(
-      ggplot(topFiveCountrySummaryDF, aes(
-        x=reorder(Country,-transactions), y = transactions, fill = Country
-      )) + geom_col() + labs(x = 'Location', y = 'Transactions', title = "Transactions per Location")  +
-        theme(
-          axis.text.y = element_text(
-            face = "bold",
-            color = "#000000",
-            size =
-              8,
-            angle = 45
-          )
-        ),
-      width = plotWidth,
-      height = plotHeight
-      
-    ))
-    
-  })
+  # output$transactionPlotly <- renderPlotly({
+  #     print(ggplotly(
+  #     ggplot(topFiveCountrySummaryDF, aes(
+  #       x=reorder(Country,-transactions), y = transactions, fill = Country
+  #     )) + geom_col() + labs(x = 'Location', y = 'Transactions', title = "Transactions per Location")  +
+  #       theme(
+  #         axis.text.y = element_text(
+  #           face = "bold",
+  #           color = "#000000",
+  #           size =
+  #             8,
+  #           angle = 45
+  #         )
+  #       ),
+  #     width = plotWidth,
+  #     height = plotHeight
+  #     
+  #   ))
+  #   
+  # })
   
   
   #############RFM#####################
@@ -1799,7 +1755,7 @@ shinyServer(function(input, output, session) {
           rfmGraph
           
         }
-        , width = plotWidth, height = plotHeight
+        
       )
     )
     
@@ -1979,7 +1935,7 @@ shinyServer(function(input, output, session) {
     
     print(
       ggplotly(
-        ggplot(topprod, aes(x=reorder(Description,-revenue), y = revenue, fill=Description)) + geom_col() + labs(x = 'Product', y = 'Revenue', title = "Top 10 revenue generating products") +theme(axis.text.x = element_blank(),axis.text.y = element_text(face="bold", color="#000000", 
+        ggplot(topprod, aes(x=reorder(Description,-revenue), y = revenue, fill=Description)) + geom_col() + labs(x = 'Product', y = 'Revenue', title = "Top 10 Revenue Generating Products") +theme(axis.text.x = element_blank(),axis.text.y = element_text(face="bold", color="#000000", 
                                                                                                                                                                                                                                                              size=10, angle=45)),
         width = plotWidth, height = plotHeight
         
