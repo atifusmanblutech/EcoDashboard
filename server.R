@@ -12,11 +12,7 @@ library(rgdal)
 library(shinythemes)
 
 
-#Atif Usman
-<<<<<<< HEAD
-#Danish Zahid
-=======
->>>>>>> master
+
 
 library("shinycssloaders", lib.loc="~/R/win-library/3.4")
 library("gmailr", lib.loc="~/R/win-library/3.4")
