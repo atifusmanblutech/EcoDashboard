@@ -38,96 +38,9 @@ dashboardPage(
                                              
                                            
                                              menuItem("", icon = icon("globe","fa-2x",lib = "font-awesome"), tabName = "tab_locationInsights"),
-                                             conditionalPanel("input.sidebar === 'tab_locationInsights'",
-                                                              uiOutput("selCountry"),
-                                                              
-                                                              
-                                                              br(),
-                                                              sliderInput("sliderNumOfProducts", "Select Number of Products:",
-                                                                          min = 0, max = 20,
-                                                                          value = 5),
-                                                              br(),
-                                                              hr(),
-                                                              
-                                                              shinyjs::hidden(
-                                                                div(
-                                                                  id="div_countryCampaign",
-                                                                  
-                                                                  
-                                                                  h3("Marketing",style = "align:center;text-align:center;"),
-                                                                  hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                                  uiOutput("countryControls"),
-                                                                  helpText("Note: Emails will be sent to all customers in selected", 
-                                                                           br(),
-                                                                           "Locations"),
-                                                                  
-                                                                  uiOutput("productControls"),
-                                                                  helpText("Note: Discounts will be applied only on selected products"),
-                                                                  
-                                                                  textAreaInput(
-                                                                    "camCountryMessage",
-                                                                    "Enter campaign text or offers to send: ",
-                                                                    "Special Discount Offers!",
-                                                                    "100%",
-                                                                    "100px",
-                                                                    resize = "vertical"
-                                                                  ),
-                                                                  actionButton("manualCountryCampaignEmail", "Launch Email Campaign",icon("envelope")),
-                                                                  br(),
-                                                                  br(),
-                                                                  actionButton("manualCountryCampaignSms", "Launch SMS Campaign",icon("envelope")),
-                                                                  br(),
-                                                                  
-                                                                  hr()
-                                                                )#end of div_countryCampaign
-                                                              )#end of shinyjs::hidden
-                                                              
-                                             ),
-                                             menuItem("", icon = icon("product-hunt","fa-2x",lib = "font-awesome"), tabName = "tab_productInsights"),
-                                             conditionalPanel("input.sidebar === 'tab_productInsights'",
-                                                              uiOutput('productCountryControls') ,
-                                                              helpText("Select product to view insights and trends related to the",
-                                                                       br(),
-                                                                       "product"),
-                                                              hr (),
-                                                              h3("Product Marketing",style = "align:center;text-align:center;"),
-                                                              hr(style ="border-top: dotted 1px #FFFFFF"),
-                                                              uiOutput('ProductCountryMarketingFilter'),
-                                                              textAreaInput(
-                                                                'ProductCampaignText',
-                                                                "Enter campaign text or offers to send: ",
-                                                                "Special Discount Offers!",
-                                                                "100%",
-                                                                "100px",
-                                                                resize = "vertical"
-                                                              ),
-                                                              shinyjs::hidden(
-                                                                div(id="div_productAutoCampaign",
-                                                                    
-                                                                    actionButton(
-                                                                      "ProductCampaign",
-                                                                      "Launch Email Campaign",
-                                                                      icon("envelope"),
-                                                                      style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
-                                                                      
-                                                                    ),
-                                                                    hr(),
-                                                                    actionButton(
-                                                                      "ProductCampaignSms",
-                                                                      "Launch SMS Campaign",
-                                                                      icon("envelope")
-                                                                    ),
-                                                                    helpText(
-                                                                      "Note: Selected product campaign will be launched", 
-                                                                      br(),
-                                                                      "targeting consumers of selected location via Email and", 
-                                                                      br(),
-                                                                      "SMS"
-                                                                    )    
-                                                                )#end of div_productAutoCampaign
-                                                              )#end of shinyjs::hidden
-                                                              
-                                             )
+                                             
+                                             menuItem("", icon = icon("product-hunt","fa-2x",lib = "font-awesome"), tabName = "tab_productInsights")
+                                             
                                  )
                                  
                ),
@@ -508,6 +421,15 @@ dashboardPage(
                                  
                              ),
                              box(width = 12, title = "Top Products in Selected Location", status = "primary", collapsible = T, solidHeader = T,
+                                 uiOutput("selCountry"),
+                                 
+                                 
+                                 br(),
+                                 sliderInput("sliderNumOfProducts", "Select Number of Products:",
+                                             min = 0, max = 20,
+                                             value = 5),
+                                 br(),
+                                 hr(),
                                  plotlyOutput("countryTransPlotly") %>% withSpinner(color ="#0dc5c1")
                              ),
                              
@@ -515,6 +437,40 @@ dashboardPage(
                                  br(),
                                  leafletOutput("mymap", width = "90%") %>% withSpinner(color =
                                                                                           "#0dc5c1")
+                             ),
+                             box(width = 6, status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
+                                 shinyjs::hidden(
+                                   div(
+                                     id="div_countryCampaign",
+                                     
+                                     
+                                     h3("Marketing",style = "align:center;text-align:center;"),
+                                     hr(style ="border-top: dotted 1px #FFFFFF"),
+                                     uiOutput("countryControls"),
+                                     helpText("Note: Emails will be sent to all customers in selected", 
+                                              br(),
+                                              "Locations"),
+                                     
+                                     uiOutput("productControls"),
+                                     helpText("Note: Discounts will be applied only on selected products"),
+                                     
+                                     textAreaInput(
+                                       "camCountryMessage",
+                                       "Enter campaign text or offers to send: ",
+                                       "Special Discount Offers!",
+                                       "100%",
+                                       "100px",
+                                       resize = "vertical"
+                                     ),
+                                     actionButton("manualCountryCampaignEmail", "Launch Email Campaign",icon("envelope")),
+                                     br(),
+                                     br(),
+                                     actionButton("manualCountryCampaignSms", "Launch SMS Campaign",icon("envelope")),
+                                     br(),
+                                     
+                                     hr()
+                                   )#end of div_countryCampaign
+                                 )#end of shinyjs::hidden
                              )
                            )),
 #########Product Insights Tab################
@@ -529,11 +485,54 @@ dashboardPage(
                                  plotlyOutput('prodCountryGraph1') %>% withSpinner(color =
                                                                                      "#0dc5c1")
                              ),
-                             box(width = 12,title = "Map Displaying Revenue Generated Per Location", status = "primary", collapsible = T, solidHeader = T,
+                             box(width = 12, title = "Map Displaying Revenue Generated Per Location", status = "primary", collapsible = T, solidHeader = T,
                                  #h3("Map Displaying Revenue Generated Per Location",style = "align:center;text-align:center;text-shadow: 2px 2px #FFFFFF"),
                                  br(),
                                  leafletOutput("mymap1", width = "90%") %>% withSpinner(color =
                                                                                           "#0dc5c1")
+                             ),
+                             box(width = 12, status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
+                                 uiOutput('productCountryControls') ,
+                                 helpText("Select product to view insights and trends related to the",
+                                          br(),
+                                          "product"),
+                                 hr (),
+                                 h3("Product Marketing",style = "align:center;text-align:center;"),
+                                 hr(style ="border-top: dotted 1px #FFFFFF"),
+                                 uiOutput('ProductCountryMarketingFilter'),
+                                 textAreaInput(
+                                   'ProductCampaignText',
+                                   "Enter campaign text or offers to send: ",
+                                   "Special Discount Offers!",
+                                   "100%",
+                                   "100px",
+                                   resize = "vertical"
+                                 ),
+                                 shinyjs::hidden(
+                                   div(id="div_productAutoCampaign",
+                                       
+                                       actionButton(
+                                         "ProductCampaign",
+                                         "Launch Email Campaign",
+                                         icon("envelope"),
+                                         style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                         
+                                       ),
+                                       hr(),
+                                       actionButton(
+                                         "ProductCampaignSms",
+                                         "Launch SMS Campaign",
+                                         icon("envelope")
+                                       ),
+                                       helpText(
+                                         "Note: Selected product campaign will be launched", 
+                                         br(),
+                                         "targeting consumers of selected location via Email and", 
+                                         br(),
+                                         "SMS"
+                                       )    
+                                   )#end of div_productAutoCampaign
+                                 )#end of shinyjs::hidden
                              )
                            ))
                    

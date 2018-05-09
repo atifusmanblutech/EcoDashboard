@@ -928,7 +928,7 @@ shinyServer(function(input, output, session) {
         ggplot(aes(x = date, y = revenue, label = (paste('Date :', as.Date(date, "%m/%d/%Y"))))) + geom_line(group=1) + geom_smooth(method = 'auto', se = FALSE) + labs(x = 'Date', y = 'Revenue (£)', title = 'Overall Revenue Trend by Date') +
         theme(axis.text.y = element_text(face="bold", color="#000000", 
                                          size=10, angle=45))
-      , tooltip = c("label","revenue") , width = plotWidth, height = plotHeight )
+      , tooltip = c("label","revenue"))
     )
   })
   
