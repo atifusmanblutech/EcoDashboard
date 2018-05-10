@@ -715,11 +715,24 @@ shinyServer(function(input, output, session) {
           ggplotly(weekdayRevenueGraph <- weekdayDF2 %>%
                      group_by(dayOfWeek) %>%
                      summarise(revenue=sum(revenue)) %>%
-                     ggplot(aes(x=dayOfWeek,y=revenue, fill=dayOfWeek, text= paste(" Day :",dayOfWeek, "<br>", "Revenue (£):",
-                                                                                   revenue)))+geom_col()+labs(x='Day of Week', y='Revenue (£)', title=revenueDayTitle)+theme(axis.text.y = element_text(face="bold", color="#000000",
-                                                                                                                                                                                                        size=10, angle=45)),tooltip = c("text") )
-           
-      
+                     ggplot(
+                       aes(x=dayOfWeek,
+                           y=revenue,
+                           fill=dayOfWeek,
+                           text= paste(" Day :",dayOfWeek,
+                                       "<br>",
+                                       "Revenue ($):", revenue
+                                       )))+geom_col()+labs(
+                                         x='Day of Week',
+                                         y='Revenue ($)',
+                                         title=revenueDayTitle
+                                         )+theme(
+                                           axis.text.y = element_text(
+                                             face="bold",
+                                             color="#000000",
+                                             size=10,
+                                             angle=45)),
+                   tooltip = c("text") )
     )
     
   })
@@ -744,12 +757,23 @@ shinyServer(function(input, output, session) {
               ggplotly(weekdayTransactions <- weekdayDF2 %>%
                      group_by(dayOfWeek) %>%
                      summarise(trans= sum(transactions)) %>%
-                     ggplot(aes(x=reorder(dayOfWeek,-trans), y = trans, fill=dayOfWeek, text= paste(" Day: ", dayOfWeek, "<br>", "Transactions: ", trans ))) + geom_col(position = "stack") +
-                     labs(x = 'Date',
-                          y = 'Transactions',
-                          title = transactionsDayTitle), tooltip = c("text"))
-
-          
+                     ggplot(
+                       aes(
+                         x=reorder(dayOfWeek,-trans),
+                         y = trans,
+                         fill=dayOfWeek,
+                         text= paste(
+                           " Day: ", dayOfWeek,
+                           "<br>",
+                           "Transactions: ", trans
+                           ))) + geom_col(
+                             position = "stack"
+                             ) + labs(
+                               x = 'Date',
+                               y = 'Transactions',
+                               title = transactionsDayTitle
+                               ),
+                     tooltip = c("text"))
     )
     
   })
@@ -772,11 +796,20 @@ shinyServer(function(input, output, session) {
           ggplotly(hourlyRevenueGraph <- filteredWeekdayDF %>%
                      group_by(hourOfDay) %>%
                      summarise(revenue = sum(lineTotal)) %>%
-                     ggplot(aes(x=reorder(hourOfDay,-revenue), y = revenue, fill=hourOfDay, text= paste(" Hour of Day: ", hourOfDay,":00 hrs<br>", "Revenue ($): ", revenue))) + geom_col() + labs(x = 'Hour Of Day',
-                                                                                                                                                                                            y = 'Revenue (£)',
-                                                                                                                                                                                            title = title_hourlyTrevenue), tooltip = c("text"))
-          
-          
+                     ggplot(
+                       aes(
+                         x=reorder(hourOfDay,-revenue),
+                         y = revenue,
+                         fill=hourOfDay,
+                         text= paste(
+                           " Hour of Day: ", hourOfDay,":00 hrs<br>",
+                           "Revenue ($): ", revenue
+                           ))) + geom_col() + labs(
+                             x = 'Hour Of Day',
+                             y = 'Revenue ($)',
+                             title = title_hourlyTrevenue
+                             ),
+                   tooltip = c("text"))
     )
     
   })
@@ -796,12 +829,20 @@ shinyServer(function(input, output, session) {
           ggplotly(hourlyTransactionGRaph <- filteredWeekdayDF %>%
                      group_by(hourOfDay) %>%
                      summarise(transactions = n_distinct(InvoiceNo)) %>%
-                     ggplot(aes(x=reorder(hourOfDay,-transactions), y = transactions, fill=hourOfDay, text = paste(" Hour of Day: ", hourOfDay, "<br>", "Transactions: ", transactions))) + geom_col() + labs(x = 'Hour Of Day',
-                                                                                                                                                                                                              y = 'Number of Transactions',
-                                                                                                                                                                                                              title = transactionsHourlyTitle), tooltip = c("text"))
-
-
-      
+                     ggplot(
+                       aes(
+                         x=reorder(hourOfDay,-transactions),
+                         y = transactions,
+                         fill=hourOfDay,
+                         text = paste(" Hour of Day: ", hourOfDay,
+                                      "<br>",
+                                      "Transactions: ", transactions
+                                      ))) + geom_col() + labs(
+                                        x = 'Hour Of Day',
+                                        y = 'Number of Transactions',
+                                        title = transactionsHourlyTitle
+                                        ),
+                   tooltip = c("text"))
       )
     
   })
@@ -925,10 +966,26 @@ shinyServer(function(input, output, session) {
       custData %>%
         group_by(date) %>%
         summarise(revenue = sum(lineTotal)) %>%
-        ggplot(aes(x = date, y = revenue, label = (paste('Date :', as.Date(date, "%m/%d/%Y"))))) + geom_line(group=1) + geom_smooth(method = 'auto', se = FALSE) + labs(x = 'Date', y = 'Revenue (£)', title = 'Overall Revenue Trend by Date') +
-        theme(axis.text.y = element_text(face="bold", color="#000000", 
-                                         size=10, angle=45))
-      , tooltip = c("label","revenue"))
+        ggplot(
+          aes(
+            x = date,
+            y = revenue,
+            text = (paste('Revenue ($) : ', revenue,
+                          "<br>",
+                          'Date :', as.Date(date, "%m/%d/%Y"
+                                            ))))) + geom_line(group=1) + geom_smooth(
+                                              method = 'auto', se = FALSE
+                                              ) + labs(
+                                                x = 'Date',
+                                                y = 'Revenue ($)',
+                                                title = 'Overall Revenue Trend by Date'
+                                                ) + theme(axis.text.y = element_text(
+                                                  face="bold",
+                                                  color="#000000",
+                                                  size=10,
+                                                  angle=45
+                                                  )),
+      tooltip = c("text"))
     )
   })
   
@@ -1025,14 +1082,24 @@ shinyServer(function(input, output, session) {
     print(
       ggplotly(
         
-        ggplot(top20customers, aes(x=reorder(CustomerID,-revenue), y = revenue, fill=CustomerID)) + geom_col(group=1) + labs(x = 'Customers',
-                                                                                                                             y = 'Revenue',
-                                                                                                                             title = myTitle)  +theme(axis.text.x = element_text(face="bold", color="#000000", 
-                                                                                                                                                                                 size=6, angle=45)) + scale_y_continuous(labels = scales::comma),
-        source = "revenuePerCustomerEvent"
-        
-        
-      ),width = plotWidth, height = plotHeight, tooltip = NULL)
+        ggplot(top20customers, aes(x=reorder(CustomerID,-revenue), y = revenue, fill=CustomerID,
+                                   text = paste(
+          "Revenue ($) : ", revenue,
+          "<br>",
+          "CustomerID : ", CustomerID
+        ))) + geom_col(group=1) + labs(x = 'Customers',
+                                       y = 'Revenue ($)',
+                                       title = myTitle
+                                       )  +theme(axis.text.x = element_text(
+                                         face="bold",
+                                         color="#000000",
+                                         size=6,
+                                         angle=45)) + scale_y_continuous(
+                                           labels = scales::comma),
+        source = "revenuePerCustomerEvent",
+        width = plotWidth,
+        height = plotHeight, tooltip = c("text")
+      ))
     
     
     
@@ -1045,7 +1112,12 @@ shinyServer(function(input, output, session) {
       print(
         ggplotly(
           
-          ggplot(x, aes(dayOfWeek, revenue)) + geom_bar(aes(fill = Description), position = "dodge", stat="identity")
+          ggplot(x,
+                 aes(dayOfWeek,
+                     revenue)) + geom_bar(aes(
+                       fill = Description),
+                       position = "dodge",
+                       stat="identity")
         )
       )
       
@@ -1168,11 +1240,18 @@ shinyServer(function(input, output, session) {
     
     #+ geom_smooth(method = 'auto', se = FALSE)
     
-    p <- ggplot(topFiveCountrySummaryDF, aes(x = date , y = revenue, color= Country, group = 1, text = paste('Revenue ($):', revenue,
-                                                                                                             '<br>Date: ', as.Date(date),
-                                                                                                             '<br>Location: ', Country))) + geom_line() + labs(x = 'Location', y = 'Revenue ($)', color= 'Location', title = 'Revenue by Location over Time')
-    
-    
+    p <- ggplot(topFiveCountrySummaryDF,
+                aes(x = date ,
+                    y = revenue,
+                    color= Country,
+                    group = 1,
+                    text = paste('Revenue ($):', revenue,
+                                 '<br>Date: ', as.Date(date),
+                                 '<br>Location: ', Country
+                                 ))) + geom_line() + labs(x = 'Location',
+                                                          y = 'Revenue ($)',
+                                                          color= 'Location',
+                                                          title = 'Revenue by Location over Time')
     pp <- ggplotly(p, width = plotWidth, height = plotHeight, tooltip = c("text"))
     # + geom_smooth(method = 'auto', se = FALSE) 
     
@@ -1265,7 +1344,7 @@ shinyServer(function(input, output, session) {
                  radius = ~sqrt(as.integer(countryToCities$revenue)*100) * 30, popup = paste("City: ",
                                                                                              countryToCities$City,
                                                                                              "<br/>",
-                                                                                             "Revenue: ",
+                                                                                             "Revenue ($): ",
                                                                                              countryToCities$revenue)
       )
   })
@@ -1287,10 +1366,27 @@ shinyServer(function(input, output, session) {
       
       print(
         ggplotly(
-          ggplot(c_t, aes(x=reorder(Description,-sumOfQuatity), y = sumOfQuatity, fill=Description)) + geom_bar(stat= "identity",width = .5)  + labs(x = "Product Name", y = "Quantity Sold",title = thisCountry) + theme(axis.text.x = element_blank(),axis.text.y = element_text(face="bold", color="#000000", 
-                                                                                                                                                                                                                                                                                   size=8, angle=45))
-          
-          , width = plotWidth, height = plotHeight 
+          ggplot(c_t,
+                 aes(
+                   x=reorder(Description,-sumOfQuatity),
+                   y = sumOfQuatity,
+                   fill=Description,
+                   text = paste(
+                     "Quantity : ", sumOfQuatity,
+                     "<br>",
+                     "Description: ", Description
+                   ))) + geom_bar(
+                     stat= "identity",width = .5
+                     )  + labs(x = "Product Name",
+                               y = "Quantity Sold",
+                               title = thisCountry) + theme(axis.text.x = element_blank(),
+                                                            axis.text.y = element_text(
+                                                              face="bold",
+                                                              color="#000000",
+                                                              size=8,
+                                                              angle=45
+                                                              ))
+          , width = plotWidth, height = plotHeight, tooltip = c("text")
         ))  
       
       
@@ -1776,7 +1872,10 @@ shinyServer(function(input, output, session) {
           group_by(class) %>%
           summarise(customers = n_distinct(CustomerID)) %>%
           ggplot(aes(
-            x = reorder(class, -customers), y = customers, fill = class
+            x = reorder(class, -customers), y = customers, fill = class,
+            text = paste("Customers : ", customers,
+                         "<br>",
+                         "Class : ", class)
           )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Customer Class', y = 'No. of Customers', title =
                                                               'RFM of Customer')
         
@@ -1794,8 +1893,11 @@ shinyServer(function(input, output, session) {
         
         
         rfmGraph <- ggplot(customerBreakdownFiltered, aes(
-          x= reorder(Country, -customers), y = customers, fill = Country
-        )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Country', y = 'No. of Customers', title =
+          x= reorder(Country, -customers), y = customers, fill = Country,
+          text = paste("Customers : ", customers,
+                       "<br>",
+                       "Location : ", Country)
+        )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Location', y = 'No. of Customers', title =
                                                             'Customers Per Location')
         
       }
@@ -1806,7 +1908,10 @@ shinyServer(function(input, output, session) {
         group_by(class) %>%
         summarise(customers = n_distinct(CustomerID)) %>%
         ggplot(aes(
-          x= reorder(class, -customers), y = customers, fill = class
+          x= reorder(class, -customers), y = customers, fill = class,
+          text = paste("Customers : ", customers,
+                       "<br>",
+                       "Class : ", class)
         )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Customer Class', y = 'No. of Customers', title =
                                                             'RFM of Customer')
       
@@ -1821,6 +1926,7 @@ shinyServer(function(input, output, session) {
           rfmGraph
           
         }
+        , tooltip = c("text")
         
       )
     )
@@ -2001,9 +2107,28 @@ shinyServer(function(input, output, session) {
     
     print(
       ggplotly(
-        ggplot(topprod, aes(x=reorder(Description,-revenue), y = revenue, fill=Description)) + geom_col() + labs(x = 'Product', y = 'Revenue', title = "Top 10 Revenue Generating Products") +theme(axis.text.x = element_blank(),axis.text.y = element_text(face="bold", color="#000000", 
-                                                                                                                                                                                                                                                             size=10, angle=45)),
-        width = plotWidth, height = plotHeight
+        ggplot(
+          topprod,
+          aes(
+            x=reorder(Description,-revenue),
+            y = revenue,
+            fill=Description,
+            text = paste("Revenue ($) : ", revenue,
+                         "<br>",
+                         "Description : ", Description
+                         )
+            )) + geom_col() + labs(
+              x = 'Product',
+              y = 'Revenue ($)',
+              title = "Top 10 Revenue Generating Products"
+              ) +theme(
+                axis.text.x = element_blank(),
+                axis.text.y = element_text(
+                  face="bold",
+                  color="#000000",
+                  size=10,
+                  angle=45)),
+        width = plotWidth, height = plotHeight , tooltip = c("text")
         
       ))
   })
@@ -2070,23 +2195,33 @@ shinyServer(function(input, output, session) {
   output$prodCountryGraph1 <- renderPlotly({
     product <- prodData()
     
-    prodtitle <- paste(product$Description, " revenue by Location")
+    prodtitle <- paste(product$Description, " Revenue by Location")
     
     print(ggplotly(
-      ggplot(product, aes(
-        x=reorder(Country,-revenue), y = revenue, fill = Country
-      )) + geom_col() + labs(x = 'Location', y = 'Revenue', title = prodtitle)  +
-        theme(
+      ggplot(product,
+             aes(
+               x=reorder(Country,-revenue),
+               y = revenue,
+               fill = Country,
+               text = paste(
+                 "Revenue ($) : ", revenue,
+                 "<br>",
+                 "Location : ", Country
+               )
+      )) + geom_col() + labs(
+        x = 'Location',
+        y = 'Revenue ($)',
+        title = prodtitle) + theme(
           axis.text.y = element_text(
             face = "bold",
             color = "#000000",
-            size =
-              8,
+            size = 8,
             angle = 45
           )
         ),
       width = plotWidth,
-      height = plotHeight
+      height = plotHeight,
+      tooltip = c("text")
       
     ))
   })
@@ -2095,12 +2230,12 @@ shinyServer(function(input, output, session) {
     product <- prodData1()
     
     prodtitle <-
-      paste(product$Description, " revenue by Day of Week")
+      paste(product$Description, " Revenue by Day of Week")
     
     print(ggplotly(
       ggplot(product, aes(
         x = dayOfWeek, y = revenue, fill = dayOfWeek
-      )) + geom_col() + labs(x = 'Day of Week', y = 'Revenue', title = prodtitle)  +
+      )) + geom_col() + labs(x = 'Day of Week', y = 'Revenue ($)', title = prodtitle)  +
         theme(
           axis.text.y = element_text(
             face = "bold",
@@ -2135,7 +2270,7 @@ shinyServer(function(input, output, session) {
                  radius = ~sqrt(as.integer(product$revenue)*100) * 50, popup = paste("Product: ",product$Description,"<br/>","City: ",
                                                                                      product$Country,
                                                                                      "<br/>",
-                                                                                     "Revenue: ",
+                                                                                     "Revenue ($): ",
                                                                                      product$revenue,"<br/>",product$Longitude,product$Latitude))
   })
   
