@@ -1903,37 +1903,44 @@ shinyServer(function(input, output, session) {
     #if nothing selected or basic graph.. then show basic graph
     if(isTruthy(selected))
     {
-      if(selected == "Total Classification Graph")
-      {
-        rfmGraph <- customerBreakdownClass %>%
-          group_by(class) %>%
-          summarise(customers = n_distinct(CustomerID)) %>%
-          ggplot(aes(
-            x = reorder(class, -customers), y = customers, fill = class,
-            text = paste("Customers : ", customers,
-                         "<br>",
-                         "Class : ", class)
-          )) + labs(
-            x = 'Customer Class',
-            y = 'No. of Customers',
-            title = 'RFM of Customer',
-            fill= '     Class'
-            ) + geom_bar(stat= "identity",width = .3)
-        
-        l <- list(
-          font = list(
-            family = "sans-sarif",
-            size = 12
-          ),
-          bgcolor = "#E2E2E2",
-          bordercolor = "#FFFFFF",
-          borderwidth = 2
-        )
-        
-        
-      }
-      else
-      {
+      # if(selected == "Total Classification Graph")
+      # {
+      #   customerBreakdownSelected <- customerBreakdownClass[customerBreakdownClass$class %in% "Gold",] 
+      #   
+      #   customerBreakdownFiltered <- customerBreakdownSelected %>% 
+      #     group_by(class) %>% 
+      #     summarise(customers = n_distinct(CustomerID)) %>% 
+      #     filter(customers > 5) 
+      #   
+      #   
+      #   rfmGraph <- customerBreakdownFiltered %>% 
+      #     group_by(class) %>%
+      #     summarise(customers = n_distinct(CustomerID)) %>%
+      #     ggplot(aes(
+      #       x = reorder(class, -customers), y = customers, fill = class,
+      #       text = paste("Customers : ", customers,
+      #                    "<br>",
+      #                    "Class : ", class)
+      #     )) + labs(
+      #       x = 'Customer Class',
+      #       y = 'No. of Customers',
+      #       title = 'RFM of Customer',
+      #       fill= '     Class'
+      #       ) + geom_bar(stat= "identity",width = .3)
+      #   
+      #   l <- list(
+      #     font = list(
+      #       family = "sans-sarif",
+      #       size = 12
+      #     ),
+      #     bgcolor = "#E2E2E2",
+      #     bordercolor = "#FFFFFF",
+      #     borderwidth = 2
+      #   )
+      #   
+      #   
+      # }
+      
         
         customerBreakdownSelected <- customerBreakdownClass[customerBreakdownClass$class %in% selected,]
         
@@ -1962,7 +1969,7 @@ shinyServer(function(input, output, session) {
           borderwidth = 2
         )
         
-      }
+      
     }
     else
     {
@@ -2552,6 +2559,160 @@ shinyServer(function(input, output, session) {
    print(pp)
   })
   
+  
+  output$plotly_dailyPlot_RevenueComb <- renderPlotly( 
+    { 
+      
+      
+      
+      vectorInput <- input$slider_comb 
+      filteredCombCustData <- filter(topFiveCountriesDF, as.Date(topFiveCountriesDF$date) >= as.Date(vectorInput[1]) & as.Date(topFiveCountriesDF$date) <= as.Date(vectorInput[2])) 
+      
+      
+      # 
+      # # Creating a new DF from filtered countries 
+      
+      
+      
+      weekdayDF2 <- filteredCombCustData %>% 
+        group_by(date, dayOfWeek) %>% 
+        summarise(revenue = sum(lineTotal), transactions = n_distinct(InvoiceNo)) %>% 
+        mutate(aveOrdVal = (round((revenue / transactions),2))) %>% 
+        ungroup() 
+      
+      revenueDayTitle <- paste("Daily Revenue between ", vectorInput[1], " and ", vectorInput[2]) 
+      
+      print( 
+        
+        ggplotly(weekdayDF2 %>% 
+                   group_by(dayOfWeek) %>% 
+                   summarise(revenue=sum(revenue)) %>% 
+                   ggplot( 
+                     aes(x=dayOfWeek, 
+                         y=revenue, 
+                         fill=dayOfWeek, 
+                         text= paste(" Day :",dayOfWeek, 
+                                     "<br>", 
+                                     "Revenue ($):", revenue 
+                         )))+geom_col()+labs( 
+                           x='Day of Week', 
+                           y='Revenue ($)', 
+                           title=revenueDayTitle, 
+                           fill = "Days"
+                         )+theme( 
+                           axis.text.y = element_text( 
+                             face="bold", 
+                             color="#000000", 
+                             size=10, 
+                             angle=45)), 
+                 tooltip = c("text") ) 
+      ) 
+      
+    } 
+  ) 
+  
+  
+  
+  output$plotly_hourlyPlot_RevenueComb <- renderPlotly( 
+    { 
+      
+      
+      
+      vectorInput <- input$slider_comb 
+      
+      filteredWeekdayDF <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2])) 
+      
+      title_hourlyTrevenue <- paste("Hourly Revenue between ", vectorInput[1], " and ", vectorInput[2]) 
+      
+      print( 
+        ggplotly(hourlyRevenueGraph <- filteredWeekdayDF %>% 
+                   group_by(hourOfDay) %>% 
+                   summarise(revenue = sum(lineTotal)) %>% 
+                   ggplot( 
+                     aes( 
+                       x=reorder(hourOfDay,-revenue), 
+                       y = revenue, 
+                       fill=hourOfDay, 
+                       text= paste( 
+                         " Hour of Day: ", hourOfDay,":00 hrs<br>", 
+                         "Revenue ($): ", revenue 
+                       ))) + geom_col() + labs( 
+                         x = 'Hour Of Day', 
+                         y = 'Revenue ($)', 
+                         title = title_hourlyTrevenue 
+                       ) + theme(legend.position = "none"),
+                 tooltip = c("text")) 
+      ) 
+      
+      
+    } 
+  ) 
+  
+  
+  #####revenue per customer graph##### 
+  output$revenuePerCustomerComb<- renderPlotly({ 
+    
+    top20customers <- head(custSummaryDF,10) 
+    
+    myTitle <- paste("Showing Total Revenue of Top ", input$numOfCustomers , " Customers") 
+    
+    top20customers$CustomerID <- as.character(top20customers$CustomerID) 
+    
+    #Event Data 
+    output$revenuePerCustomerClickInfoComb <- renderPrint({ 
+      paste("Revenue Per Customer Click: ","<br>") 
+      # str(input$plot_click) 
+      
+      d <- event_data("plotly_click",source = "revenuePerCustomerEventComb") 
+      if (is.null(d))  
+      {"Click on a state to view event data" 
+      } 
+      else 
+      { 
+        #Getting customer ID from click event 
+        customerIDdf <- top20customers[top20customers$revenue == d$y,] 
+        
+        #Getting customer info of clicked customer 
+        myDF <-  customerBreakdown[ customerBreakdown$CustomerID == customerIDdf$CustomerID,] 
+        
+        # Displaying newly generated DF 
+        # output$top20customersDT <- DT::renderDataTable( 
+        #   myDF, 
+        #   options = list(scrollX = TRUE) 
+        # ) 
+        
+        
+        cat(paste(" CustomerID: ", myDF$CustomerID, "\n Favourite Day:", myDF$mostDay, "\n Favourite Product: ", myDF$mostProd)) 
+      } 
+      
+      
+      
+    }) 
+    
+    print( 
+      ggplotly( 
+        ggplot(top20customers, aes(x=reorder(CustomerID,-revenue), y = revenue, fill=CustomerID, 
+                                   text = paste( 
+                                     "Revenue ($) : ", revenue, 
+                                     "<br>", 
+                                     "CustomerID : ", CustomerID 
+                                   ))) + geom_col(group=1) + labs(x = 'Customers', 
+                                                                  y = 'Revenue ($)', 
+                                                                  title = myTitle 
+                                   )  +theme(axis.text.x = element_text( 
+                                     face="bold", 
+                                     color="#000000", 
+                                     size=6, 
+                                     angle=45)) + scale_y_continuous( 
+                                       labels = scales::comma), 
+        source = "revenuePerCustomerEventComb", 
+        width = '100%', 
+        height = '100%', tooltip = c("text") 
+      )) 
+    
+    
+    
+  }) 
   
   
   ########################################
