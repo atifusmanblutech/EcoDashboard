@@ -1,6 +1,5 @@
 library(shinydashboard)
 
-
 dashboardPage( 
                 
                
@@ -59,9 +58,17 @@ dashboardPage(
                   .sidebar-collapse .left-side, .sidebar-collapse .main-sidebar{ 
                     transform: translate(0,0);
                      width: 40px;
-                     }
+                  }
+            
+                   .users2 {color: #FFF; font-size: 100px;}
+                    .product-hunt2 {color: #FFF; font-size: 100px;}
+                     .calendar2 {color: #FFF; font-size: 100px;}
+                      .globe2 {color: #FFF;font-size: 100px;}
+                        .small-box {height: 250px}
                    ')
                  )
+                 
+                 
                  ),
                  tabItems(
                    tabItem(tabName = "tab_homePage",
@@ -78,10 +85,17 @@ dashboardPage(
                              # tags$div(href="#shiny-tab-tab_dayInsights", fluid = TRUE,
                              #          width = 3, "data-toggle" = "tab",
                              #          infoBox(value = "Go to Timeline Insights",title = "Timeline Insights")),
-                             valueBoxOutput("box_01") ,
-                             valueBoxOutput("box_02") ,
-                             valueBoxOutput("box_03") ,
-                             valueBoxOutput("box_04") 
+                             valueBoxOutput("box_01", width = 4)%>% withSpinner(color = "#0dc5c1") ,
+                            
+                             valueBoxOutput("box_02", width = 4) 
+                           ),
+                           br(),
+                           br(),
+                           fluidRow(
+                             valueBoxOutput("box_03", width = 4) ,
+                             
+                             valueBoxOutput("box_04", width = 4)
+                             
                              
                            )
                    ),

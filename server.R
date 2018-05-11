@@ -895,8 +895,8 @@ shinyServer(function(input, output, session) {
   
   output$box_01 <- renderValueBox({
     entry_01 <- ""
-    valueBox(value=entry_01 , icon = icon("list-alt",lib="font-awesome"), 
-             width=4,color = "aqua" ,subtitle = HTML(" <button id=\"button\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Daily Insights</button>")
+    valueBox(value=entry_01 , icon = icon("calendar",lib="font-awesome", class = "calendar2"),
+             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Daily Insights</button>")
     )})
   
   observeEvent(input$button, {
@@ -909,8 +909,8 @@ shinyServer(function(input, output, session) {
   
   output$box_02 <- renderValueBox({
     entry_02 <- ""
-    valueBox(value=entry_02 , icon = icon("table",lib="font-awesome"),
-             width=4,color = "aqua" ,subtitle = HTML(" <button id=\"button1\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Product Insights</button>")
+    valueBox(value=entry_02 , icon = icon("product-hunt",lib="font-awesome", class = "product-hunt2"),
+             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button1\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Product Insights</button>")
     )})
   
   observeEvent(input$button1, {
@@ -923,8 +923,8 @@ shinyServer(function(input, output, session) {
   
   output$box_03 <- renderValueBox({
     entry_03 <- ""
-    valueBox(value=entry_03 , icon = icon("users",lib="font-awesome"),
-             width=4,color = "aqua" ,subtitle = HTML(" <button id=\"button2\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Customer Insights</button>")
+    valueBox(value=entry_03 , icon = icon("users",lib="font-awesome", class = "users2"),
+             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button2\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Customer Insights</button>")
     )})
   
   observeEvent(input$button2, {
@@ -938,8 +938,8 @@ shinyServer(function(input, output, session) {
   
   output$box_04 <- renderValueBox({
     entry_04 <- ""
-    valueBox(value=entry_04 , icon = icon("bar-chart-o",lib="font-awesome"),
-             width=4,color = "aqua" ,subtitle = HTML(" <button id=\"button3\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Location Insights</button>")
+    valueBox(value=entry_04 , icon = icon("globe",lib="font-awesome", class = "globe2"),
+             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button3\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Location Insights</button>")
     )})
   
   observeEvent(input$button3, {
