@@ -531,7 +531,21 @@ dashboardPage(
                            )),
 #########Combined Insights Tab################
 
-tabItem(tabName = "tab_combinedInsights",fluidRow(box(width = 12, title = "Top 10 Revenue Generating Products", status = "primary", collapsible = T, solidHeader = T,
+tabItem(tabName = "tab_combinedInsights",fluidRow(
+  
+        box(width = 12, title = "Select Date Range To View Data", status = "primary", collapsible = T, solidHeader = T,
+            shinyjs::hidden
+            (
+              sliderInput("slider_comb",
+                          "Choose Date Range:",
+                          animate = TRUE,
+                          width = "100%",
+                          min = as.Date("2010-12-01"), max = as.Date("2011-12-09"),
+                          value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
+            )
+            ),
+  
+        box(width = 12, title = "Top 10 Revenue Generating Products", status = "primary", collapsible = T, solidHeader = T,
                                                       plotlyOutput('prodCountryGraphComb') %>% withSpinner(color =
                                                                                                          "#0dc5c1")),
         box(width = 12,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue by Location over Time",
