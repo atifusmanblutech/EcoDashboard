@@ -1271,42 +1271,7 @@ shinyServer(function(input, output, session) {
   })
   
   
-  output$countryPlotlyComb <- renderPlotly({
-    
-    
-    countrySegmenationType <- input$CountrySegmentation
-    
-    #+ geom_smooth(method = 'auto', se = FALSE)
-    
-    p <- ggplot(topFiveCountrySummaryDF,
-                aes(x = date ,
-                    y = revenue,
-                    color= Country,
-                    group = 1,
-                    text = paste('Revenue ($):', revenue,
-                                 '<br>Date: ', as.Date(date),
-                                 '<br>Location: ', Country
-                    ))) + geom_line() + labs(x = 'Location',
-                                             y = 'Revenue ($)',
-                                             color= 'Location',
-                                             title = 'Revenue by Location over Time')
-    pp <- ggplotly(p, width = plotWidth, height = plotHeight, tooltip = c("text"))
-    # + geom_smooth(method = 'auto', se = FALSE) 
-    
-    # # p <- add_annotations(p,x=14950.25,y = 37907.0863030, text = "Max Rev")
-    # library(grid)
-    # my_text <- "This text is at x=0.7 and y=0.8!"
-    # my_grob = grid.text(my_text, x=topFiveCountrySummaryDF$date[which.max(topFiveCountrySummaryDF$date)],  y=topFiveCountrySummaryDF$revenue[which.max(topFiveCountrySummaryDF$revenue)], gp=gpar(col="firebrick", fontsize=14, fontface="bold"))
-    # p + annotation_custom(my_grob)
-    # 
-    
-    # gg <- plot_ly(topFiveCountrySummaryDF, x = ~date, y = ~revenue) %>%
-    #   slice(which.max(revenue)) %>%
-    #   add_annotations(text = "Good mileage")
-    # 
-    # #y=topFiveCountrySummaryDF$revenue[which.max(topFiveCountrySummaryDF$revenue)]
-    print(pp)
-  })
+  
   
   
   #### Country Specific Campaign Button ####
@@ -2199,34 +2164,7 @@ shinyServer(function(input, output, session) {
       ))
   })
   
-  output$prodCountryGraphComb <- renderPlotly({
-    print(
-      ggplotly(
-        ggplot(
-          topprod,
-          aes(
-            x=reorder(Description,-revenue),
-            y = revenue,
-            fill=Description,
-            text = paste("Revenue ($) : ", revenue,
-                         "<br>",
-                         "Description : ", Description
-            )
-          )) + geom_col() + labs(
-            x = 'Product',
-            y = 'Revenue ($)',
-            title = "Top 10 Revenue Generating Products"
-          ) +theme(
-            axis.text.x = element_blank(),
-            axis.text.y = element_text(
-              face="bold",
-              color="#000000",
-              size=10,
-              angle=45)),
-        width = plotWidth, height = plotHeight , tooltip = c("text")
-        
-      ))
-  })
+  
   
   # output$prodCountryGraph <- renderPlotly({
   #   print(ggplotly(
@@ -2457,6 +2395,95 @@ shinyServer(function(input, output, session) {
     showNotification(sprintf("SMS sent to customers: %s",nrow(top10prod)), type = "message")
     
   })
+  
+  #########Combined insight page##########
+  output$prodCountryGraphComb <- renderPlotly({
+    
+    shinyjs::show("slider_comb")
+    
+    vectorInput <- input$slider_comb
+    filteredCombCustData <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2]))
+    
+    productSummaryComb <- filteredCombCustData %>%
+      group_by(StockCode, Description) %>%
+      summarise(orders = n_distinct(InvoiceNo), revenue = sum(lineTotal), quantity = sum(Quantity), price = max(UnitPrice),
+                mostDay = names(which.max(table(dayOfWeek))), mostHour = names(which.max(table(hourOfDay))), mostCountry = names(which.max(table(Country)))) %>%
+      mutate(aveOrdVal = (round((revenue / orders),2))) %>%
+      ungroup() %>%
+      arrange(desc(revenue))
+    
+    
+    topprodcomb <- head(productSummaryComb,n = 10)
+    
+    
+    print(
+      ggplotly(
+        ggplot(
+          topprodcomb,
+          aes(
+            x=reorder(Description,-revenue),
+            y = revenue,
+            fill=Description,
+            text = paste("Revenue ($) : ", revenue,
+                         "<br>",
+                         "Description : ", Description
+            )
+          )) + geom_col() + labs(
+            x = 'Product',
+            y = 'Revenue ($)',
+            title = "Top 10 Revenue Generating Products"
+          ) +theme(
+            axis.text.x = element_blank(),
+            axis.text.y = element_text(
+              face="bold",
+              color="#000000",
+              size=10,
+              angle=45)),
+        width = plotWidth, height = plotHeight , tooltip = c("text")
+        
+      ))
+  })
+  
+  
+  output$countryPlotlyComb <- renderPlotly({
+    
+    
+     
+    vectorInput <- input$slider_comb
+    filteredCombCustData <- filter(topFiveCountriesDF, as.Date(topFiveCountriesDF$date) >= as.Date(vectorInput[1]) & as.Date(topFiveCountriesDF$date) <= as.Date(vectorInput[2]))
+    
+    
+    #
+    # # Creating a new DF from filtered countries
+    topFiveCountrySummaryDFComb <- filteredCombCustData %>%
+      group_by(Country, date) %>%
+      summarise(revenue = sum(lineTotal), transactions = n_distinct(InvoiceNo), customers = n_distinct(CustomerID)) %>%
+      mutate(aveOrdVal = (round((revenue / transactions),2))) %>%
+      ungroup() %>%
+      arrange(desc(revenue))
+  
+    
+    p <- ggplot(topFiveCountrySummaryDFComb,
+                aes(x = date ,
+                    y = revenue,
+                    color= Country,
+                    group = 1,
+                    text = paste('Revenue ($):', revenue,
+                                 '<br>Date: ', as.Date(date),
+                                 '<br>Location: ', Country
+                    ))) + geom_line() + labs(x = 'Location',
+                                             y = 'Revenue ($)',
+                                             color= 'Location',
+                                             title = 'Revenue by Location over Time')
+    pp <- ggplotly(p, width = plotWidth, height = plotHeight, tooltip = c("text"))
+   print(pp)
+  })
+  
+  
+  
+  ########################################
+  
+  
   
   
 })# End of shiny
