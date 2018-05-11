@@ -59,8 +59,8 @@ senderNumber <- paste("923335417533")
 
 
 ########Global Variables#######################
-plotWidth = 800
-plotHeight = 400
+plotWidth = '100%'
+plotHeight = '100%'
 
 #
 # #separate date and time components of InvoiceDate
@@ -725,7 +725,8 @@ shinyServer(function(input, output, session) {
                                        )))+geom_col()+labs(
                                          x='Day of Week',
                                          y='Revenue ($)',
-                                         title=revenueDayTitle
+                                         title=revenueDayTitle,
+                                         fill = "Day of week"
                                          )+theme(
                                            axis.text.y = element_text(
                                              face="bold",
@@ -759,7 +760,7 @@ shinyServer(function(input, output, session) {
                      summarise(trans= sum(transactions)) %>%
                      ggplot(
                        aes(
-                         x=reorder(dayOfWeek,-trans),
+                         x=dayOfWeek,
                          y = trans,
                          fill=dayOfWeek,
                          text= paste(
@@ -771,7 +772,8 @@ shinyServer(function(input, output, session) {
                              ) + labs(
                                x = 'Date',
                                y = 'Transactions',
-                               title = transactionsDayTitle
+                               title = transactionsDayTitle,
+                               fill = "Day of week"
                                ),
                      tooltip = c("text"))
     )
@@ -798,7 +800,7 @@ shinyServer(function(input, output, session) {
                      summarise(revenue = sum(lineTotal)) %>%
                      ggplot(
                        aes(
-                         x=reorder(hourOfDay,-revenue),
+                         x=hourOfDay,
                          y = revenue,
                          fill=hourOfDay,
                          text= paste(
@@ -808,7 +810,8 @@ shinyServer(function(input, output, session) {
                              x = 'Hour Of Day',
                              y = 'Revenue ($)',
                              title = title_hourlyTrevenue
-                             ),
+                             
+                             ) + theme(legend.position = "none"),
                    tooltip = c("text"))
     )
     
@@ -831,17 +834,18 @@ shinyServer(function(input, output, session) {
                      summarise(transactions = n_distinct(InvoiceNo)) %>%
                      ggplot(
                        aes(
-                         x=reorder(hourOfDay,-transactions),
+                         x=hourOfDay,
                          y = transactions,
                          fill=hourOfDay,
-                         text = paste(" Hour of Day: ", hourOfDay,
-                                      "<br>",
+                         text = paste("Hour of Day: ", hourOfDay,
+                                      ":00 hrs<br>",
                                       "Transactions: ", transactions
                                       ))) + geom_col() + labs(
-                                        x = 'Hour Of Day',
+                                        x = 'Hour',
                                         y = 'Number of Transactions',
                                         title = transactionsHourlyTitle
-                                        ),
+                                        #fill = "Hour of day"
+                                        )+ theme(legend.position = "none"),
                    tooltip = c("text"))
       )
     
@@ -959,7 +963,7 @@ shinyServer(function(input, output, session) {
     # #### CUSTOMER SEGMENTATION ####
   
   
-  output$transactionsPerCustomer <- renderPlotly({print(ggplotly(ggplot(custSummary, aes(transactions, fill = transactions)) + geom_histogram() + scale_x_log10() + labs(x = 'Number of Transactions', y = 'Count of Customers', title = 'Transactions per customer')),width = plotWidth, height = plotHeight)})
+  output$transactionsPerCustomer <- renderPlotly({print(ggplotly(ggplot(custSummary, aes(transactions, fill = transactions)) + geom_histogram() + scale_x_log10() + labs(x = 'Number of Transactions', y = 'Count of Customers', title = 'Transactions per customer')))})
   
   output$sidePlot2 <-  renderPlotly({
     print(ggplotly(
@@ -969,7 +973,7 @@ shinyServer(function(input, output, session) {
         ggplot(
           aes(
             x = date,
-            y = revenue,
+            y = revenue, group = 1,
             text = (paste('Revenue ($) : ', revenue,
                           "<br>",
                           'Date :', as.Date(date, "%m/%d/%Y"
@@ -1074,37 +1078,49 @@ shinyServer(function(input, output, session) {
         
         cat(paste(" CustomerID: ", myDF$CustomerID, "\n Favourite Day:", myDF$mostDay, "\n Favourite Product: ", myDF$mostProd))
       }
-      
-      
-      
     })
     
     print(
       ggplotly(
-        
-        ggplot(top20customers, aes(x=reorder(CustomerID,-revenue), y = revenue, fill=CustomerID,
-                                   text = paste(
-          "Revenue ($) : ", revenue,
-          "<br>",
-          "CustomerID : ", CustomerID
-        ))) + geom_col(group=1) + labs(x = 'Customers',
-                                       y = 'Revenue ($)',
-                                       title = myTitle
-                                       )  +theme(axis.text.x = element_text(
-                                         face="bold",
-                                         color="#000000",
-                                         size=6,
-                                         angle=45)) + scale_y_continuous(
-                                           labels = scales::comma),
+        ggplot(top20customers,
+               aes(
+                 x=reorder(CustomerID,-revenue),
+                 y = revenue,
+                 fill=CustomerID,
+                 text = paste(
+                   "Revenue ($) : ", revenue,
+                   "<br>",
+                   "CustomerID : ", CustomerID
+                   ))) + geom_col(group=1) + labs(
+                     x = 'Customers',
+                     y = 'Revenue ($)',
+                     title = myTitle
+                     )  + theme(
+                       axis.text.x = element_text(
+                         face="bold",
+                         color="#000000",
+                         size=6,
+                         angle=45
+                         )) + scale_y_continuous(
+                           labels = scales::comma),
         source = "revenuePerCustomerEvent",
-        width = plotWidth,
-        height = plotHeight, tooltip = c("text")
-      ))
-    
-    
-    
+        tooltip = c("text")
+        
+        # l <- list(
+        #   font = list(
+        #     family = "sans-sarif",
+        #     size = 12
+        #   ),
+        #   bgcolor = "#E2E2E2",
+        #   bordercolor = "#FFFFFF",
+        #   borderwidth = 2
+        # )
+        
+      ) 
+      # %>%
+      #   layout(legend = l)
+        )
   })
-  
   
   f1 <- function(x) {
     output$customerClickGraph <- renderPrint({
@@ -1248,11 +1264,20 @@ shinyServer(function(input, output, session) {
                     text = paste('Revenue ($):', revenue,
                                  '<br>Date: ', as.Date(date),
                                  '<br>Location: ', Country
-                                 ))) + geom_line() + labs(x = 'Location',
+                                 ))) + geom_line() + labs(x = 'Date',
                                                           y = 'Revenue ($)',
-                                                          color= 'Location',
+                                                          color= '   Location',
                                                           title = 'Revenue by Location over Time')
-    pp <- ggplotly(p, width = plotWidth, height = plotHeight, tooltip = c("text"))
+    l <- list(
+      font = list(
+        family = "sans-sarif",
+        size = 12
+      ),
+      bgcolor = "#E2E2E2",
+      bordercolor = "#FFFFFF",
+      borderwidth = 2
+    )
+    pp <- ggplotly(p, tooltip = c("text")) %>% layout(legend = l)
     # + geom_smooth(method = 'auto', se = FALSE) 
     
     # # p <- add_annotations(p,x=14950.25,y = 37907.0863030, text = "Max Rev")
@@ -1382,14 +1407,16 @@ shinyServer(function(input, output, session) {
                      stat= "identity",width = .5
                      )  + labs(x = "Product Name",
                                y = "Quantity Sold",
-                               title = thisCountry) + theme(axis.text.x = element_blank(),
+                               title = thisCountry,
+                               fill = "<br>          Description"
+                               ) + theme(axis.text.x = element_blank(),
                                                             axis.text.y = element_text(
                                                               face="bold",
                                                               color="#000000",
                                                               size=8,
                                                               angle=45
                                                               ))
-          , width = plotWidth, height = plotHeight, tooltip = c("text")
+          , tooltip = c("text")
         ))  
       
       
@@ -1406,8 +1433,17 @@ shinyServer(function(input, output, session) {
       
       print(
         ggplotly(
-          ggplot(c_t, aes(x = reorder(Description, -sumOfQuantity), y = sumOfQuantity, fill=Description)) + geom_col() + labs(x = 'Product', y = 'Transactions', title = thisCountry)
-          
+          ggplot(c_t,
+                 aes(
+                   x = reorder(Description, -sumOfQuantity),
+                   y = sumOfQuantity,
+                   fill=Description
+                   )) + geom_col() + labs(
+                     x = 'Product',
+                     y = 'Transactions',
+                     title = thisCountry,
+                     fill = "<br>          Description"
+                     )
           
         ))  
       
@@ -1877,8 +1913,22 @@ shinyServer(function(input, output, session) {
             text = paste("Customers : ", customers,
                          "<br>",
                          "Class : ", class)
-          )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Customer Class', y = 'No. of Customers', title =
-                                                              'RFM of Customer')
+          )) + labs(
+            x = 'Customer Class',
+            y = 'No. of Customers',
+            title = 'RFM of Customer',
+            fill= '     Class'
+            ) + geom_bar(stat= "identity",width = .3)
+        
+        l <- list(
+          font = list(
+            family = "sans-sarif",
+            size = 12
+          ),
+          bgcolor = "#E2E2E2",
+          bordercolor = "#FFFFFF",
+          borderwidth = 2
+        )
         
         
       }
@@ -1899,7 +1949,18 @@ shinyServer(function(input, output, session) {
                        "<br>",
                        "Location : ", class)
         )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Location', y = 'No. of Customers', title =
-                                                            'Customers Per Location')
+                                                            'Customers Per Location',
+                                                          fill= '   Class')
+        
+        l <- list(
+          font = list(
+            family = "sans-sarif",
+            size = 12
+          ),
+          bgcolor = "#E2E2E2",
+          bordercolor = "#FFFFFF",
+          borderwidth = 2
+        )
         
       }
     }
@@ -1913,9 +1974,22 @@ shinyServer(function(input, output, session) {
           text = paste("Customers : ", customers,
                        "<br>",
                        "Class : ", class)
-        )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Customer Class', y = 'No. of Customers', title =
-                                                            'RFM of Customer')
+        )) + geom_bar(stat= "identity",width = .3) + labs(
+          x = 'Customer Class',
+          y = 'No. of Customers',
+          title = 'RFM of Customer',
+          fill= '   Class'
+          )
       
+      l <- list(
+        font = list(
+          family = "sans-sarif",
+          size = 12
+        ),
+        bgcolor = "#E2E2E2",
+        bordercolor = "#FFFFFF",
+        borderwidth = 2
+      )
     }
     
     
@@ -1929,7 +2003,8 @@ shinyServer(function(input, output, session) {
         }
         , tooltip = c("text")
         
-      )
+      ) %>%
+        layout(legend = l)
     )
     
   })
@@ -2151,15 +2226,17 @@ shinyServer(function(input, output, session) {
             )) + geom_col() + labs(
               x = 'Product',
               y = 'Revenue ($)',
-              title = "Top 10 Revenue Generating Products"
+              title = "Top 10 Revenue Generating Products",
+              fill = "<br>          Description"
               ) +theme(
                 axis.text.x = element_blank(),
                 axis.text.y = element_text(
                   face="bold",
+                  
                   color="#000000",
                   size=10,
                   angle=45)),
-        width = plotWidth, height = plotHeight , tooltip = c("text")
+         tooltip = c("text")
         
       ))
   })
@@ -2244,7 +2321,8 @@ shinyServer(function(input, output, session) {
       )) + geom_col() + labs(
         x = 'Location',
         y = 'Revenue ($)',
-        title = prodtitle) + theme(
+        title = prodtitle,
+        fill = "     Location") + theme(
           axis.text.y = element_text(
             face = "bold",
             color = "#000000",
@@ -2252,8 +2330,6 @@ shinyServer(function(input, output, session) {
             angle = 45
           )
         ),
-      width = plotWidth,
-      height = plotHeight,
       tooltip = c("text")
       
     ))
@@ -2277,9 +2353,7 @@ shinyServer(function(input, output, session) {
               8,
             angle = 45
           )
-        ),
-      width = plotWidth,
-      height = plotHeight
+        )
       
     ))
   })
@@ -2298,7 +2372,7 @@ shinyServer(function(input, output, session) {
         }
       }
     }
-    leaflet(product, width=plotWidth, height = plotHeight) %>% addTiles() %>%
+    leaflet(product) %>% addTiles() %>%
       addCircles(lng = ~Longitude, lat = ~Latitude, weight = 1,
                  radius = ~sqrt(as.integer(product$revenue)*100) * 50, popup = paste("Product: ",product$Description,"<br/>","City: ",
                                                                                      product$Country,
@@ -2438,8 +2512,7 @@ shinyServer(function(input, output, session) {
               face="bold",
               color="#000000",
               size=10,
-              angle=45)),
-        width = plotWidth, height = plotHeight , tooltip = c("text")
+              angle=45)), tooltip = c("text")
         
       ))
   })
@@ -2475,7 +2548,7 @@ shinyServer(function(input, output, session) {
                                              y = 'Revenue ($)',
                                              color= 'Location',
                                              title = 'Revenue by Location over Time')
-    pp <- ggplotly(p, width = plotWidth, height = plotHeight, tooltip = c("text"))
+    pp <- ggplotly(p, tooltip = c("text"))
    print(pp)
   })
   
