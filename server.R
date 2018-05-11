@@ -895,8 +895,8 @@ shinyServer(function(input, output, session) {
   
   output$box_01 <- renderValueBox({
     entry_01 <- ""
-    valueBox(value=entry_01 , icon = icon("list-alt",lib="font-awesome"),
-             width=NULL,color = "aqua" ,subtitle = HTML(" <button id=\"button\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Daily Insights</button>")
+    valueBox(value=entry_01 , icon = icon("list-alt",lib="font-awesome"), 
+             width=4,color = "aqua" ,subtitle = HTML(" <button id=\"button\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Daily Insights</button>")
     )})
   
   observeEvent(input$button, {
@@ -910,7 +910,7 @@ shinyServer(function(input, output, session) {
   output$box_02 <- renderValueBox({
     entry_02 <- ""
     valueBox(value=entry_02 , icon = icon("table",lib="font-awesome"),
-             width=NULL,color = "aqua" ,subtitle = HTML(" <button id=\"button1\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Product Insights</button>")
+             width=4,color = "aqua" ,subtitle = HTML(" <button id=\"button1\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Product Insights</button>")
     )})
   
   observeEvent(input$button1, {
@@ -924,7 +924,7 @@ shinyServer(function(input, output, session) {
   output$box_03 <- renderValueBox({
     entry_03 <- ""
     valueBox(value=entry_03 , icon = icon("users",lib="font-awesome"),
-             width=NULL,color = "aqua" ,subtitle = HTML(" <button id=\"button2\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Customer Insights</button>")
+             width=4,color = "aqua" ,subtitle = HTML(" <button id=\"button2\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Customer Insights</button>")
     )})
   
   observeEvent(input$button2, {
@@ -939,7 +939,7 @@ shinyServer(function(input, output, session) {
   output$box_04 <- renderValueBox({
     entry_04 <- ""
     valueBox(value=entry_04 , icon = icon("bar-chart-o",lib="font-awesome"),
-             width=NULL,color = "aqua" ,subtitle = HTML(" <button id=\"button3\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Location Insights</button>")
+             width=4,color = "aqua" ,subtitle = HTML(" <button id=\"button3\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 40px;color: white\">Location Insights</button>")
     )})
   
   observeEvent(input$button3, {
@@ -1832,8 +1832,6 @@ shinyServer(function(input, output, session) {
     
   }
   
-  # output$breakdownTable <- DT::renderDataTable(dt <- customerRFMchoiceInput(),
-  #                   options = list(scrollX = TRUE))
   
   
   ###############Customer Insights Graph & RFM######################################
@@ -1887,16 +1885,16 @@ shinyServer(function(input, output, session) {
         customerBreakdownSelected <- customerBreakdownClass[customerBreakdownClass$class %in% selected,]
         
         customerBreakdownFiltered <- customerBreakdownSelected %>%
-          group_by(Country) %>%
+          group_by(class) %>%
           summarise(customers = n_distinct(CustomerID)) %>%
           filter(customers > 5)
         
         
         rfmGraph <- ggplot(customerBreakdownFiltered, aes(
-          x= reorder(Country, -customers), y = customers, fill = Country,
+          x= reorder(class, -customers), y = customers, fill = class,
           text = paste("Customers : ", customers,
                        "<br>",
-                       "Location : ", Country)
+                       "Location : ", class)
         )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Location', y = 'No. of Customers', title =
                                                             'Customers Per Location')
         
@@ -1932,6 +1930,36 @@ shinyServer(function(input, output, session) {
     )
     
   })
+  
+  output$rfmGraphPieChart <- renderPlotly({
+    # 
+    # USPersonalExpenditure <- data.frame("Categorie"=rownames(USPersonalExpenditure), USPersonalExpenditure)
+    # data <- USPersonalExpenditure[,c('Categorie', 'X1960')]
+    df_rfm_pieChart <- customerBreakdownClass %>%
+      group_by(class) %>%
+      summarise(customers = n_distinct(CustomerID))
+    
+    p <- plot_ly(df_rfm_pieChart, labels = ~class, values = ~customers, type = 'pie',
+                 textposition = 'inside',
+                 textinfo = 'label+percent',
+                 insidetextfont = list(color = '#FFFFFF'),
+                 hoverinfo = 'text',
+                 text = ~paste(customers, '', class ,' Customers'),
+                 marker = list(colors = colors,
+                               line = list(color = '#FFFFFF', width = 1)),
+                 showlegend = FALSE) %>%
+      layout(title = 'Total Customers in Each Type of Class',
+             xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+    
+    print(
+      ggplotly(
+        p
+        
+      )
+    )
+  })
+    
   
   
   ########Customer Insights SMS Campaign#############

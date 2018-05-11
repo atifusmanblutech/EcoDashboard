@@ -6,25 +6,8 @@ dashboardPage(
                
                dashboardHeader(title = "Campaign Launch Demo", titleWidth = 350,tags$li(class = "dropdown",
                                                                                         actionButton("home", "Home", icon("house"),
-                                                                                        style = "color: #FFF; background-color: Transparent; border-color: Transparent; font-size: 20px")),
-                               dropdownMenu(type = "messages",
-                                            messageItem(
-                                              from = "Sales Dept",
-                                              message = "Sales are steady this month."
-                                            ),
-                                            messageItem(
-                                              from = "New User",
-                                              message = "How do I register?",
-                                              icon = icon("question"),
-                                              time = "13:45"
-                                            ),
-                                            messageItem(
-                                              from = "Support",
-                                              message = "The new server is ready.",
-                                              icon = icon("life-ring"),
-                                              time = "2014-12-01"
-                                            )
-                                 )
+                                                                                        style = "color: #FFF; background-color: Transparent; border-color: Transparent; font-size: 20px"))
+                               
                                ),
                
                dashboardSidebar( width = 60, collapsed = TRUE,
@@ -94,7 +77,7 @@ dashboardPage(
                              # tags$div(href="#shiny-tab-tab_dayInsights", fluid = TRUE,
                              #          width = 3, "data-toggle" = "tab",
                              #          infoBox(value = "Go to Timeline Insights",title = "Timeline Insights")),
-                             valueBoxOutput("box_01")%>% withSpinner(color = "#0dc5c1") ,
+                             valueBoxOutput("box_01") ,
                              valueBoxOutput("box_02") ,
                              valueBoxOutput("box_03") ,
                              valueBoxOutput("box_04") 
@@ -311,13 +294,23 @@ dashboardPage(
                              ),
                              box(
                                width = 8,  status = "primary", collapsible = T, solidHeader = T, title = "RFM Plot",
-                               uiOutput("customerRFMchoice") ,
-                               helpText(
-                                 "Note: Selecting a Classification will display graph of",
-                                 br(),
-                                 "customers of that class in all countries"
-                               ),
-                               plotlyOutput('rfmGraphPlot') %>% withSpinner(color = "#0dc5c1")
+                               tabBox(width=8,id="tabBox_rfmPlot",
+                                      tabPanel("Plots",
+                                               
+                                               uiOutput("customerRFMchoice") ,
+                                               helpText(
+                                                 "Note: Selecting a Classification will display graph of",
+                                                 br(),
+                                                 "customers of that class in all countries"
+                                               ),
+                                               plotlyOutput('rfmGraphPlot') %>% withSpinner(color = "#0dc5c1")
+                                      ),#end of tabpanel
+                                      
+                                      tabPanel("Pie Chart",
+                                               plotlyOutput('rfmGraphPieChart') %>% withSpinner(color = "#0dc5c1")
+                                      )#end of tabpanel
+                               ) #end of tabBox_rfmPlot
+                               
                                
                              ),
                              box(
