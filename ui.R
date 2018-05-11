@@ -94,7 +94,8 @@ dashboardPage(
                            fluidRow(
                              valueBoxOutput("box_03", width = 4) ,
                              
-                             valueBoxOutput("box_04", width = 4)
+                             valueBoxOutput("box_04", width = 4),
+                             valueBoxOutput("box_05", width = 4)
                              
                              
                            )
@@ -559,28 +560,29 @@ tabItem(tabName = "tab_combinedInsights",fluidRow(
             )
             ),
   
-        box(width = 12, title = "Top 10 Revenue Generating Products", status = "primary", collapsible = T, solidHeader = T,
+        box(width = 6, title = "Top 10 Revenue Generating Products", status = "primary", collapsible = T, solidHeader = T,
                                                       plotlyOutput('prodCountryGraphComb') %>% withSpinner(color =
                                                                                                          "#0dc5c1")),
-        box(width = 12,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue by Location over Time",
+        box(width = 6,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue by Location over Time",
             plotlyOutput("countryPlotlyComb") %>% withSpinner(color =
                                                             "#0dc5c1")),
         
-        box(width = 10, status = "primary", collapsible = T, solidHeader = T, title = "Top 10 Revenue Generating Customers",
-            plotlyOutput("revenuePerCustomerComb") %>% withSpinner(color =
-                                                                    "#0dc5c1"),
-            verbatimTextOutput("revenuePerCustomerClickInfoComb")
-            
-            ),
-        box(width = 10, status = "primary", collapsible = T, solidHeader = T, title = "Overall Revenue by WeekDays",
+        
+        box(width = 6, status = "primary", collapsible = T, solidHeader = T, title = "Overall Revenue by WeekDays",
             plotlyOutput('plotly_dailyPlot_RevenueComb') %>% withSpinner(color = 
                                                                            "#0dc5c1")
     
             ),
-        box(width = 10, status = "primary", collapsible = T, solidHeader = T, title = "Overall Revenue by HourOfDay",
+        box(width = 6, status = "primary", collapsible = T, solidHeader = T, title = "Overall Revenue by HourOfDay",
             plotlyOutput('plotly_hourlyPlot_RevenueComb') %>% withSpinner(color = "#0dc5c1")
             
-            )
+            ),
+        box(width = 6, status = "primary", collapsible = T, solidHeader = T, title = "Top 10 Revenue Generating Customers",
+            plotlyOutput("revenuePerCustomerComb") %>% withSpinner(color =
+                                                                     "#0dc5c1"),
+            verbatimTextOutput("revenuePerCustomerClickInfoComb")
+            
+        )
         
         
 )
