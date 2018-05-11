@@ -310,7 +310,12 @@ dashboardPage(
                              ),
                              box(
                                width = 8,  status = "primary", collapsible = T, solidHeader = T, title = "RFM Plot",
-                               tabBox(width=8,id="tabBox_rfmPlot",
+                               tabBox(width = 12, id="tabBox_rfmPlot",
+                                      
+                                      
+                                      tabPanel("Pie Chart",
+                                               plotlyOutput('rfmGraphPieChart') %>% withSpinner(color = "#0dc5c1")
+                                      ),#end of tabpanel
                                       tabPanel("Plots",
                                                
                                                uiOutput("customerRFMchoice") ,
@@ -320,10 +325,6 @@ dashboardPage(
                                                  "customers of that class in all countries"
                                                ),
                                                plotlyOutput('rfmGraphPlot') %>% withSpinner(color = "#0dc5c1")
-                                      ),#end of tabpanel
-                                      
-                                      tabPanel("Pie Chart",
-                                               plotlyOutput('rfmGraphPieChart') %>% withSpinner(color = "#0dc5c1")
                                       )#end of tabpanel
                                ) #end of tabBox_rfmPlot
                                
