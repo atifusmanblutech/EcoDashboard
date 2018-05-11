@@ -952,6 +952,18 @@ shinyServer(function(input, output, session) {
   })
   
   
+  output$box_05 <- renderValueBox({
+    entry_05 <- ""
+    valueBox(value=entry_05 , icon = icon("globe",lib="font-awesome", class = "globe2"),
+             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button4\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Combined Insights</button>")
+    )})
+  
+  observeEvent(input$button4, {
+    newtab4 <- switch(input$sidebar, "tab_homePage" = "tab_combinedInsights","tab_combinedInsights" = "tab_homePage")
+    updateTabItems(session, "sidebar", newtab4)
+  })
+  
+  
   #################Home Button#######################3
 
   observeEvent(input$home, {
@@ -2654,7 +2666,7 @@ shinyServer(function(input, output, session) {
     
     top20customers <- head(custSummaryDF,10) 
     
-    myTitle <- paste("Showing Total Revenue of Top ", input$numOfCustomers , " Customers") 
+    myTitle <- paste("Showing Total Revenue of Top 10 Customers") 
     
     top20customers$CustomerID <- as.character(top20customers$CustomerID) 
     
@@ -2699,15 +2711,14 @@ shinyServer(function(input, output, session) {
                                    ))) + geom_col(group=1) + labs(x = 'Customers', 
                                                                   y = 'Revenue ($)', 
                                                                   title = myTitle 
-                                   )  +theme(axis.text.x = element_text( 
+                                   )  + theme(legend.position = "none", axis.text.x = element_text( 
                                      face="bold", 
                                      color="#000000", 
                                      size=6, 
                                      angle=45)) + scale_y_continuous( 
                                        labels = scales::comma), 
         source = "revenuePerCustomerEventComb", 
-        width = '100%', 
-        height = '100%', tooltip = c("text") 
+         tooltip = c("text") 
       )) 
     
     
