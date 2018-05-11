@@ -1271,6 +1271,44 @@ shinyServer(function(input, output, session) {
   })
   
   
+  output$countryPlotlyComb <- renderPlotly({
+    
+    
+    countrySegmenationType <- input$CountrySegmentation
+    
+    #+ geom_smooth(method = 'auto', se = FALSE)
+    
+    p <- ggplot(topFiveCountrySummaryDF,
+                aes(x = date ,
+                    y = revenue,
+                    color= Country,
+                    group = 1,
+                    text = paste('Revenue ($):', revenue,
+                                 '<br>Date: ', as.Date(date),
+                                 '<br>Location: ', Country
+                    ))) + geom_line() + labs(x = 'Location',
+                                             y = 'Revenue ($)',
+                                             color= 'Location',
+                                             title = 'Revenue by Location over Time')
+    pp <- ggplotly(p, width = plotWidth, height = plotHeight, tooltip = c("text"))
+    # + geom_smooth(method = 'auto', se = FALSE) 
+    
+    # # p <- add_annotations(p,x=14950.25,y = 37907.0863030, text = "Max Rev")
+    # library(grid)
+    # my_text <- "This text is at x=0.7 and y=0.8!"
+    # my_grob = grid.text(my_text, x=topFiveCountrySummaryDF$date[which.max(topFiveCountrySummaryDF$date)],  y=topFiveCountrySummaryDF$revenue[which.max(topFiveCountrySummaryDF$revenue)], gp=gpar(col="firebrick", fontsize=14, fontface="bold"))
+    # p + annotation_custom(my_grob)
+    # 
+    
+    # gg <- plot_ly(topFiveCountrySummaryDF, x = ~date, y = ~revenue) %>%
+    #   slice(which.max(revenue)) %>%
+    #   add_annotations(text = "Good mileage")
+    # 
+    # #y=topFiveCountrySummaryDF$revenue[which.max(topFiveCountrySummaryDF$revenue)]
+    print(pp)
+  })
+  
+  
   #### Country Specific Campaign Button ####
   output$countryControls <- renderUI({
     selectInput("CountryMarketingFilter", "Please Select Location to Target Marketing", multiple = FALSE ,
@@ -2156,6 +2194,35 @@ shinyServer(function(input, output, session) {
                   color="#000000",
                   size=10,
                   angle=45)),
+        width = plotWidth, height = plotHeight , tooltip = c("text")
+        
+      ))
+  })
+  
+  output$prodCountryGraphComb <- renderPlotly({
+    print(
+      ggplotly(
+        ggplot(
+          topprod,
+          aes(
+            x=reorder(Description,-revenue),
+            y = revenue,
+            fill=Description,
+            text = paste("Revenue ($) : ", revenue,
+                         "<br>",
+                         "Description : ", Description
+            )
+          )) + geom_col() + labs(
+            x = 'Product',
+            y = 'Revenue ($)',
+            title = "Top 10 Revenue Generating Products"
+          ) +theme(
+            axis.text.x = element_blank(),
+            axis.text.y = element_text(
+              face="bold",
+              color="#000000",
+              size=10,
+              angle=45)),
         width = plotWidth, height = plotHeight , tooltip = c("text")
         
       ))
