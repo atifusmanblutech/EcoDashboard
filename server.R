@@ -1891,7 +1891,7 @@ shinyServer(function(input, output, session) {
   output$customerRFMchoice <- renderUI({
     
     selectInput("customerInsights", "Please Select Classification",
-                choices=c("Total Classification Graph","Gold","Silver","Platinum"),1)
+                choices=c("Total RFM","Gold","Silver","Platinum"),1)
   })
   
   
@@ -1915,13 +1915,19 @@ shinyServer(function(input, output, session) {
     #if nothing selected or basic graph.. then show basic graph
     if(isTruthy(selected))
     {
-      if(selected == "Total Classification Graph")
+      if(selected == "Total RFM")
       {
-        rfmGraph <- customerBreakdownClass %>%
+        #customerBreakdownSelected <- customerBreakdownClass[customerBreakdownClass$class %in% "Gold",]
+
+        customerBreakdownFiltered <- customerBreakdownClass %>%
           group_by(class) %>%
           summarise(customers = n_distinct(CustomerID)) %>%
+          filter(customers > 5)
+
+
+        rfmGraph <- customerBreakdownFiltered %>%
           ggplot(aes(
-            x = reorder(class, -customers), y = customers, fill = class,
+            x = reorder(class, customers), y = customers, fill = class,
             text = paste("Customers : ", customers,
                          "<br>",
                          "Class : ", class)
@@ -1931,6 +1937,20 @@ shinyServer(function(input, output, session) {
             title = 'RFM of Customer',
             fill= '     Class'
             ) + geom_bar(stat= "identity",width = .3)
+
+        l <- list(
+          font = list(
+            family = "sans-sarif",
+            size = 12
+          ),
+          bgcolor = "#E2E2E2",
+          bordercolor = "#FFFFFF",
+          borderwidth = 2
+        )
+
+
+      }else
+      {
         
         l <- list(
           font = list(
@@ -1956,7 +1976,7 @@ shinyServer(function(input, output, session) {
         
         
         rfmGraph <- ggplot(customerBreakdownFiltered, aes(
-          x= reorder(class, -customers), y = customers, fill = class,
+          x= reorder(class, customers), y = customers, fill = class,
           text = paste("Customers : ", customers,
                        "<br>",
                        "Location : ", class)
@@ -1974,6 +1994,7 @@ shinyServer(function(input, output, session) {
           borderwidth = 2
         )
         
+      
       }
     }
     else
@@ -1982,7 +2003,7 @@ shinyServer(function(input, output, session) {
         group_by(class) %>%
         summarise(customers = n_distinct(CustomerID)) %>%
         ggplot(aes(
-          x= reorder(class, -customers), y = customers, fill = class,
+          x= reorder(class, customers), y = customers, fill = class,
           text = paste("Customers : ", customers,
                        "<br>",
                        "Class : ", class)
@@ -1992,7 +2013,7 @@ shinyServer(function(input, output, session) {
           title = 'RFM of Customer',
           fill= '   Class'
           )
-      
+
       l <- list(
         font = list(
           family = "sans-sarif",
@@ -2657,7 +2678,18 @@ shinyServer(function(input, output, session) {
   #####revenue per customer graph##### 
   output$revenuePerCustomerComb<- renderPlotly({ 
     
-    top20customers <- head(custSummaryDF,10) 
+    vectorInput <- input$slider_comb 
+    
+    custdataCustComb <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2])) 
+    
+    custSummaryDFComb <- custdataCustComb %>%
+      group_by(CustomerID) %>%
+      summarise(revenue = sum(lineTotal), transactions = n_distinct(InvoiceNo)) %>%
+      mutate(aveOrdVal = (round((revenue / transactions),2))) %>%
+      ungroup() %>%
+      arrange(desc(revenue))
+    
+    top20customers <- head(custSummaryDFComb, 10) 
     
     myTitle <- paste("Showing Total Revenue of Top 10 Customers") 
     
