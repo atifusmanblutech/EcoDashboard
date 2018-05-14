@@ -1304,7 +1304,7 @@ shinyServer(function(input, output, session) {
                     text = paste('Revenue ($):', revenue,
                                  '<br>Date: ', as.Date(date),
                                  '<br>Location: ', Country
-                                 ))) + geom_line() + labs(x = 'Date',
+                                 )))+ annotate("text", x = topFiveCountrySummaryDF$date, y = max(topFiveCountriesDF$revenue), label = "Some text") + geom_line() + labs(x = 'Date',
                                                           y = 'Revenue ($)',
                                                           color= '   Location',
                                                           title = 'Revenue by Location over Time')
@@ -1317,6 +1317,9 @@ shinyServer(function(input, output, session) {
       bordercolor = "#FFFFFF",
       borderwidth = 2
     )
+    # p + annotate("text", x = , y = 50368, label = "Some text")
+    # p + slice(which.max(revenue)) %>%
+    #   add_annotations(text = "Campaign launched")
     pp <- ggplotly(p, tooltip = c("text")) %>% layout(legend = l)
     # + geom_smooth(method = 'auto', se = FALSE) 
     
@@ -1327,11 +1330,12 @@ shinyServer(function(input, output, session) {
     # p + annotation_custom(my_grob)
     # 
     
-    # gg <- plot_ly(topFiveCountrySummaryDF, x = ~date, y = ~revenue) %>%
-    #   slice(which.max(revenue)) %>%
-    #   add_annotations(text = "Good mileage")
-    # 
+  # gg <- plot_ly(topFiveCountrySummaryDF, x = ~date, y = ~revenue, type = 'scatter',  mode= 'lines+markers', color = ~Country) %>%
+  #     slice(which.max(revenue)) %>%
+  #     add_annotations(text = "Campaign launched")
+
     # #y=topFiveCountrySummaryDF$revenue[which.max(topFiveCountrySummaryDF$revenue)]
+    
     print(pp)
   })
   
