@@ -229,11 +229,13 @@ dashboardPage(
                                        
                                        conditionalPanel("input.choice_autoManualSMS == 'Automatic'",
                                                         br(),
-                                                        actionButton("maxSmsCampaign", "Campaign for Max Revenue Day"),
+                                                        actionButton("maxSmsCampaign", "Campaign for Max Revenue Day", style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                                        ),
                                                         helpText("Note: Campaigns will lauch for day with Max Revenue"),
                                                         
                                                         br(),
-                                                        actionButton("minSmsCampaign", "Campaign for Min Revenue Day"),
+                                                        actionButton("minSmsCampaign", "Campaign for Min Revenue Day", style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                                        ),
                                                         
                                                         helpText("Note: Campaigns will lauch for day with Max Revenue")
                                        )
@@ -271,18 +273,23 @@ dashboardPage(
                                                         actionButton(
                                                           "manualEmailCampaign",
                                                           "Launch Email Campaign",
-                                                          icon("envelope")
+                                                          icon("envelope"),
+                                                          style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                                          
                                                           
                                                         )
                                        ),
                                        hr(),
                                        conditionalPanel("input.choice_autoManualEmail == 'Automatic'",
-                                                        actionButton("maxEmailCampaign", "Campaign for Max Revenue Day"),
+                                                        actionButton("maxEmailCampaign", "Campaign for Max Revenue Day", style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                                        ),
                                                         helpText("Note: Campaigns will launch for day with Max Revenue"),
                                                         
                                                         
                                                         br(),
-                                                        actionButton("minEmailCampaign", "Campaign for Min Revenue Day"),
+                                                        actionButton("minEmailCampaign", "Campaign for Min Revenue Day", 
+                                                                     style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                                        ),
                                                         helpText("Note: Campaigns will lauch for day with Min Revenue"),
                                                         br()
                                        )
@@ -339,7 +346,8 @@ dashboardPage(
                                    actionButton(
                                      "cusPersonalizedCampaignEmail",
                                      "Personalised Email Campaign",
-                                     icon("envelope"),width = '100%'
+                                     icon("envelope"),style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                     
                                    ),
                                    helpText(
                                      "Note: Selecting this button will launch an Email Campaign",
@@ -352,7 +360,8 @@ dashboardPage(
                                    actionButton(
                                      "cusPersonalizedCampaignSms",
                                      "Personalised SMS Campaign",
-                                     icon("envelope"),width = '100%'
+                                     icon("envelope"),style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                     
                                    ),
                                    helpText(
                                      "Note: Selecting this button will launch an SMS Campaign",
@@ -391,7 +400,8 @@ dashboardPage(
                                            
                                            actionButton("manualSmsCampaignCustomer",
                                                         "Launch SMS Campaign", icon("envelope"),
-                                                         width = '100%'  ),
+                                                        style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                           ),
                                            hr()
                                            
                                            
@@ -409,7 +419,9 @@ dashboardPage(
                                              "100px",
                                              resize = "vertical"
                                            ),
-                                           actionButton("manualEmailCampaignCustomer", "Launch Email Campaign",  icon("envelope"), width = '100%'),
+                                           actionButton("manualEmailCampaignCustomer", "Launch Email Campaign",  icon("envelope"),
+                                                        style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                           ),
                                            hr()
                                            
                                          )      
@@ -472,10 +484,14 @@ dashboardPage(
                                        "100px",
                                        resize = "vertical"
                                      ),
-                                     actionButton("manualCountryCampaignEmail", "Launch Email Campaign",icon("envelope")),
+                                     actionButton("manualCountryCampaignEmail", "Launch Email Campaign",icon("envelope"),
+                                                  style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                     ),
                                      br(),
                                      br(),
-                                     actionButton("manualCountryCampaignSms", "Launch SMS Campaign",icon("envelope")),
+                                     actionButton("manualCountryCampaignSms", "Launch SMS Campaign",icon("envelope"),
+                                                  style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                     ),
                                      br(),
                                      
                                      hr()
@@ -532,7 +548,8 @@ dashboardPage(
                                        actionButton(
                                          "ProductCampaignSms",
                                          "Launch SMS Campaign",
-                                         icon("envelope")
+                                         icon("envelope"), style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                         
                                        ),
                                        helpText(
                                          "Note: Selected product campaign will be launched", 
@@ -640,6 +657,7 @@ tabItem(tabName = "tab_combinedInsights",fluidRow(
             
             
         )
+        
         
         
 )

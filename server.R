@@ -1129,6 +1129,11 @@ shinyServer(function(input, output, session) {
         # )
         
       ) 
+      # %>% layout(xaxis = list(ticks = "inside", ticklen = 10,
+      #                           rangeslider = list(type = "number", thickness=0.1),
+      #                           rangeselector = list(
+      #                             buttons = list(list(step = "all", label = "All")))
+      # ))
       # %>%
       #   layout(legend = l)
         )
@@ -1910,21 +1915,19 @@ shinyServer(function(input, output, session) {
   output$rfmGraphPlot <- renderPlotly({
     selected <- customerRFMchoiceInput()
     
-    
-    
     #if nothing selected or basic graph.. then show basic graph
     if(isTruthy(selected))
     {
       if(selected == "Total RFM")
       {
         #customerBreakdownSelected <- customerBreakdownClass[customerBreakdownClass$class %in% "Gold",]
-
+        
         customerBreakdownFiltered <- customerBreakdownClass %>%
           group_by(class) %>%
           summarise(customers = n_distinct(CustomerID)) %>%
           filter(customers > 5)
-
-
+        
+        
         rfmGraph <- customerBreakdownFiltered %>%
           ggplot(aes(
             x = reorder(class, customers), y = customers, fill = class,
@@ -1936,8 +1939,8 @@ shinyServer(function(input, output, session) {
             y = 'No. of Customers',
             title = 'RFM of Customer',
             fill= '     Class'
-            ) + geom_bar(stat= "identity",width = .3)
-
+          ) + geom_bar(stat= "identity",width = .3)
+        
         l <- list(
           font = list(
             family = "sans-sarif",
@@ -1947,24 +1950,9 @@ shinyServer(function(input, output, session) {
           bordercolor = "#FFFFFF",
           borderwidth = 2
         )
-
-
+        
+        
       }else
-      {
-        
-        l <- list(
-          font = list(
-            family = "sans-sarif",
-            size = 12
-          ),
-          bgcolor = "#E2E2E2",
-          bordercolor = "#FFFFFF",
-          borderwidth = 2
-        )
-        
-        
-      }
-      else
       {
         
         customerBreakdownSelected <- customerBreakdownClass[customerBreakdownClass$class %in% selected,]
@@ -1994,7 +1982,7 @@ shinyServer(function(input, output, session) {
           borderwidth = 2
         )
         
-      
+        
       }
     }
     else
@@ -2012,8 +2000,8 @@ shinyServer(function(input, output, session) {
           y = 'No. of Customers',
           title = 'RFM of Customer',
           fill= '   Class'
-          )
-
+        )
+      
       l <- list(
         font = list(
           family = "sans-sarif",
@@ -2024,7 +2012,6 @@ shinyServer(function(input, output, session) {
         borderwidth = 2
       )
     }
-    
     
     print(
       ggplotly(
@@ -2752,8 +2739,41 @@ shinyServer(function(input, output, session) {
     
     
     
-  }) 
+  })
   
+  #select product for combined marketing
+  output$output_productMarketing_Comb <- renderUI({
+    selectInput("input_productMarketing_Comb", "Please Select Product to Target Marketing", multiple = FALSE ,
+                choices = unique(custData$Description),1)
+    
+  })
+  
+  
+  #select location for combined marketing
+  output$output_locationMarketing_Comb <- renderUI({
+    
+    selectInput("input_locationMarketing_Comb", "Please Select Product to Target Marketing", multiple = FALSE ,
+                choices = unique(custData$Country),1)
+    
+  })
+  
+  
+  observeEvent(input$btn_combineMarketing_Email, {
+    
+    showModal(modalDialog(
+      title = "Email Marketing",
+      "This is an important message!",
+      easyClose = TRUE
+    ))
+  })
+  
+  observeEvent(input$btn_combineMarketing_SMS, {
+    showModal(modalDialog(
+      title = "SMS Marketing",
+      "This is an important message!",
+      easyClose = TRUE
+    ))
+  })
   
   ########################################
   #select product for combined marketing
