@@ -1071,10 +1071,10 @@ shinyServer(function(input, output, session) {
         #   arrange(desc(revenue))
         
         # Displaying newly generated DF
-        output$top20customersDT <- DT::renderDataTable(
-          myDF,
-          options = list(scrollX = TRUE)
-        )
+        # output$top20customersDT <- DT::renderDataTable(
+        #   myDF,
+        #   options = list(scrollX = TRUE)
+        # )
         
         # output$customerClickGraph <- renderPrint({
         # 
@@ -2507,6 +2507,7 @@ shinyServer(function(input, output, session) {
   output$prodCountryGraphComb <- renderPlotly({
     
     shinyjs::show("slider_comb")
+    shinyjs::show("numOfProductsComb")
     
     vectorInput <- input$slider_comb
     filteredCombCustData <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2]))
@@ -2520,7 +2521,7 @@ shinyServer(function(input, output, session) {
       arrange(desc(revenue))
     
     
-    topprodcomb <- head(productSummaryComb,n = 10)
+    topprodcomb <- head(productSummaryComb,input$numOfProductsComb)
     
     
     print(
@@ -2538,8 +2539,8 @@ shinyServer(function(input, output, session) {
           )) + geom_col() + labs(
             x = 'Product',
             y = 'Revenue ($)',
-            title = "Top 10 Revenue Generating Products"
-          ) +theme(
+            title = "Top Revenue Generating Products"
+          ) +theme(legend.position = "none",
             axis.text.x = element_blank(),
             axis.text.y = element_text(
               face="bold",
@@ -2677,6 +2678,8 @@ shinyServer(function(input, output, session) {
   
   #####revenue per customer graph##### 
   output$revenuePerCustomerComb<- renderPlotly({ 
+    shinyjs::show("numOfCustomersComb")
+    shinyjs::show("div_combineMarketing")
     
     vectorInput <- input$slider_comb 
     
@@ -2689,7 +2692,7 @@ shinyServer(function(input, output, session) {
       ungroup() %>%
       arrange(desc(revenue))
     
-    top20customers <- head(custSummaryDFComb, 10) 
+    top20customers <- head(custSummaryDFComb, input$numOfCustomersComb) 
     
     myTitle <- paste("Showing Total Revenue of Top 10 Customers") 
     
@@ -2702,7 +2705,8 @@ shinyServer(function(input, output, session) {
       
       d <- event_data("plotly_click",source = "revenuePerCustomerEventComb") 
       if (is.null(d))  
-      {"Click on a state to view event data" 
+      {
+        "Click on a state to view event data" 
       } 
       else 
       { 
@@ -2743,7 +2747,7 @@ shinyServer(function(input, output, session) {
                                      angle=45)) + scale_y_continuous( 
                                        labels = scales::comma), 
         source = "revenuePerCustomerEventComb", 
-         tooltip = c("text") 
+         tooltip = c("text"), width = "auto"
       )) 
     
     
@@ -2752,6 +2756,39 @@ shinyServer(function(input, output, session) {
   
   
   ########################################
+  #select product for combined marketing
+  output$output_productMarketing_Comb <- renderUI({
+    selectInput("input_productMarketing_Comb", "Please Select Product to Target Marketing", multiple = FALSE ,
+                choices = unique(custData$Description),1)
+    
+  })
+  
+  
+  #select location for combined marketing
+  output$output_locationMarketing_Comb <- renderUI({
+    
+    selectInput("input_locationMarketing_Comb", "Please Select Product to Target Marketing", multiple = FALSE ,
+                choices = unique(custData$Country),1)
+    
+  })
+  
+  
+  observeEvent(input$btn_combineMarketing_Email, {
+    
+    showModal(modalDialog(
+      title = "Email Marketing",
+      "This is an important message!",
+      easyClose = TRUE
+    ))
+  })
+  
+  observeEvent(input$btn_combineMarketing_SMS, {
+    showModal(modalDialog(
+      title = "SMS Marketing",
+      "This is an important message!",
+      easyClose = TRUE
+    ))
+  })
   
   
   

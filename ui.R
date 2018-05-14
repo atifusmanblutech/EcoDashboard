@@ -300,10 +300,10 @@ dashboardPage(
                            fluidRow(
                              box(
                                width = 12,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue per Customer",
-                               sliderInput("numOfCustomers", "Number of Customers:",
-                                           min = 0, max = 100,
-                                           value = 20),
-                               plotlyOutput('revenuePerCustomer') %>% withSpinner(color =
+                               
+                               div(style='width:100%; overflow-x: scroll', sliderInput("numOfCustomers", "Number of Customers:",
+                                                                                      min = 0, max = 50,
+                                                                                      value = 40), plotlyOutput('revenuePerCustomer')) %>% withSpinner(color =
                                                                                     "#0dc5c1"),
                                
                                verbatimTextOutput("revenuePerCustomerClickInfo")
@@ -443,12 +443,12 @@ dashboardPage(
                                  plotlyOutput("countryTransPlotly") %>% withSpinner(color ="#0dc5c1")
                              ),
                              
-                             box(width = 12,  title = "Map Displaying Revenue Generated Per Location", status = "primary", collapsible = T, solidHeader = T,
+                             box(width = 8,  title = "Map Displaying Revenue Generated Per Location", status = "primary", collapsible = T, solidHeader = T,
                                  br(),
                                  leafletOutput("mymap", width = "90%") %>% withSpinner(color =
                                                                                           "#0dc5c1")
                              ),
-                             box(width = 6, status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
+                             box(width = 4, status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
                                  shinyjs::hidden(
                                    div(
                                      id="div_countryCampaign",
@@ -495,13 +495,13 @@ dashboardPage(
                                  plotlyOutput('prodCountryGraph1') %>% withSpinner(color =
                                                                                      "#0dc5c1")
                              ),
-                             box(width = 12, title = "Map Displaying Revenue Generated Per Location", status = "primary", collapsible = T, solidHeader = T,
+                             box(width = 8, title = "Map Displaying Revenue Generated Per Location", status = "primary", collapsible = T, solidHeader = T,
                                  #h3("Map Displaying Revenue Generated Per Location",style = "align:center;text-align:center;text-shadow: 2px 2px #FFFFFF"),
                                  br(),
                                  leafletOutput("mymap1", width = "90%") %>% withSpinner(color =
                                                                                           "#0dc5c1")
                              ),
-                             box(width = 12, status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
+                             box(width = 4, status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
                                  uiOutput('productCountryControls') ,
                                  helpText("Select product to view insights and trends related to the",
                                           br(),
@@ -549,7 +549,7 @@ dashboardPage(
 
 tabItem(tabName = "tab_combinedInsights",fluidRow(
   
-        box(width = 12, title = "Select Date Range To View Data", status = "primary", collapsible = T, solidHeader = T,
+        box(width = 6, title = "Select Date Range To View Data", status = "primary", collapsible = T, solidHeader = T,
             shinyjs::hidden
             (
               sliderInput("slider_comb",
@@ -560,8 +560,22 @@ tabItem(tabName = "tab_combinedInsights",fluidRow(
                           value = c(as.Date("2010-12-01"),as.Date("2011-12-09")))
             )
             ),
+        box(width = 3, title= "Select Number of Customers", status = "primary", collapsible = T, solidHeader = T,
+            shinyjs::hidden(
+              sliderInput("numOfCustomersComb", "Number of Customers:",
+                          min = 10, max = 50,
+                          value = 20)
+            )),
+        
+        box(width = 3, title= "Select Number of Products", status = "primary", collapsible = T, solidHeader = T,
+            shinyjs::hidden(
+              sliderInput("numOfProductsComb", "Number of Products:",
+                          min = 10, max = 50,
+                          value = 20)
+            ))),
+        fluidRow(
   
-        box(width = 6, title = "Top 10 Revenue Generating Products", status = "primary", collapsible = T, solidHeader = T,
+        box(width = 6, title = "Top Revenue Generating Products", status = "primary", collapsible = T, solidHeader = T,
                                                       plotlyOutput('prodCountryGraphComb') %>% withSpinner(color =
                                                                                                          "#0dc5c1")),
         box(width = 6,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue by Location over Time",
@@ -578,10 +592,52 @@ tabItem(tabName = "tab_combinedInsights",fluidRow(
             plotlyOutput('plotly_hourlyPlot_RevenueComb') %>% withSpinner(color = "#0dc5c1")
             
             ),
-        box(width = 6, status = "primary", collapsible = T, solidHeader = T, title = "Top 10 Revenue Generating Customers",
-            plotlyOutput("revenuePerCustomerComb") %>% withSpinner(color =
+        box(width = 6, status = "primary", collapsible = T, solidHeader = T, title = "Top Revenue Generating Customers",
+            div(style='width:100%; overflow-x: scroll',
+                plotlyOutput("revenuePerCustomerComb")) %>% withSpinner(color =
                                                                      "#0dc5c1"),
             verbatimTextOutput("revenuePerCustomerClickInfoComb")
+            
+        ),
+        box(width = 6,  status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
+            
+            shinyjs::hidden(
+              div(id="div_combineMarketing",
+                  
+                  dateInput('input_marketingDate_Comb',
+                            label = 'Select Date: yyyy-mm-dd',
+                            value = Sys.Date()
+                  ),
+                  selectInput(
+                    "input_customerMarketingChoice_Comb",
+                    "Please Select Customer Type",
+                    choices = c("Top Customers" = "topCustomers", "Churning Customers" = "btmCustomers"), selected = "topCustomers"),
+                  uiOutput("output_productMarketing_Comb"),
+                  
+                  
+                  
+                  br(),
+                  uiOutput("output_locationMarketing_Comb"),
+                  br(),
+                  actionButton(
+                    "btn_combineMarketing_Email",
+                    "Launch Email Campaign",
+                    icon("envelope") , style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                    
+                  ),
+                  br(),
+                  br(),
+                  actionButton(
+                    "btn_combineMarketing_SMS",
+                    "Launch SMS Campaign",
+                    icon("envelope") ,style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                    
+                  )
+              )
+            )#end of shinyjs::hidden
+            
+            
+            
             
         )
         
