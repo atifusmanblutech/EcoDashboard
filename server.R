@@ -10,10 +10,11 @@ library(plotly)
 library(shinycssloaders)
 library(rgdal)
 library(shinythemes)
+library(shinyTime)
 
 
-
-
+library("stringr", lib.loc="~/R/win-library/3.4")
+library("shinyTime", lib.loc="~/R/win-library/3.4")
 library("shinycssloaders", lib.loc="~/R/win-library/3.4")
 library("gmailr", lib.loc="~/R/win-library/3.4")
 library("plotly", lib.loc="~/R/win-library/3.4")
@@ -569,29 +570,30 @@ shinyServer(function(input, output, session) {
     
     removeDuplicated <- subset(selectedDays, !duplicated(Email))
     
+    # totalDays <- unique(selectedDays$dayOfWeek)
+    
     top20cust <- head(removeDuplicated,5)
     
     inputFromuser <- input$textSmsMarketingWeekday
     
-    for(row in 1:nrow(removeDuplicated))
+    # for(row in 1:nrow(totalDays))
+    # {
+    
+    day=paste(unique(removeDuplicated$dayOfWeek))
+    
+    message <- paste("Promotion offer for ", day , "<br> ", inputFromuser)
+    
+    for (row in 1:nrow(top20cust))
     {
+      num=paste(top20cust[row,"Number"])
       
-      day=paste(removeDuplicated[row,"dayOfWeek"])
+      messageFull <- paste(message," ",row)
+      # POST(url,authenticate(AUTH_ID,AUTH_TOKEN),body=list(src=senderNumber,dst=num,text=message))
       
-      message <- paste("Promotion offer for ", day , "<br> ", inputFromuser)
+      showNotification(paste(day, " " ,row, " Manual SMS sent to: ",num), type = "message")  
       
-      for (row in 1:nrow(top20cust))
-      {
-        num=paste(top20cust[row,"Number"])
-        
-        messageFull <- paste(message," ",row)
-        POST(url,authenticate(AUTH_ID,AUTH_TOKEN),body=list(src=senderNumber,dst=num,text=message))
-        
-        showNotification(paste(row, " Manual SMS sent to: ",num), type = "message")  
-        
-      }      
-      
-    }
+    }      
+    
     
     
     
@@ -896,11 +898,12 @@ shinyServer(function(input, output, session) {
   
   
   ############################Redirection Value Box Trial (Day Insights)########################3
+  ############################Redirection Value Box Trial (Day Insights)########################3
   
   output$box_01 <- renderValueBox({
     entry_01 <- ""
     valueBox(value=entry_01 , icon = icon("calendar",lib="font-awesome", class = "calendar2"),
-             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Daily Insights</button>")
+             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 35px;color: white\">Daily Insights</button>")
     )})
   
   observeEvent(input$button, {
@@ -914,7 +917,7 @@ shinyServer(function(input, output, session) {
   output$box_02 <- renderValueBox({
     entry_02 <- ""
     valueBox(value=entry_02 , icon = icon("product-hunt",lib="font-awesome", class = "product-hunt2"),
-             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button1\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Product Insights</button>")
+             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button1\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 30px;color: white\">Product Insights</button>")
     )})
   
   observeEvent(input$button1, {
@@ -928,7 +931,7 @@ shinyServer(function(input, output, session) {
   output$box_03 <- renderValueBox({
     entry_03 <- ""
     valueBox(value=entry_03 , icon = icon("users",lib="font-awesome", class = "users2"),
-             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button2\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Customer Insights</button>")
+             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button2\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 35px;color: white\">Customer Insights</button>")
     )})
   
   observeEvent(input$button2, {
@@ -943,7 +946,13 @@ shinyServer(function(input, output, session) {
   output$box_04 <- renderValueBox({
     entry_04 <- ""
     valueBox(value=entry_04 , icon = icon("globe",lib="font-awesome", class = "globe2"),
-             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button3\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Location Insights</button>")
+             width=NULL,
+             color = "light-blue",
+             subtitle = HTML(
+               " <button id=\"button3\"
+               type=\"button\"
+               class=\"btn btn-default action-button\"
+               style=\"background-color: Transparent; border-color: Transparent;font-size: 35px;color: white\">Location Insights</button>")
     )})
   
   observeEvent(input$button3, {
@@ -951,19 +960,33 @@ shinyServer(function(input, output, session) {
     updateTabItems(session, "sidebar", newtab3)
   })
   
-  
+  ################################Combined inSights Value Box################################3
   output$box_05 <- renderValueBox({
     entry_05 <- ""
-    valueBox(value=entry_05 , icon = icon("globe",lib="font-awesome", class = "globe2"),
-             width=NULL,color = "light-blue" ,subtitle = HTML(" <button id=\"button4\" type=\"button\" class=\"btn btn-default action-button\" style=\"background-color: Transparent; border-color: Transparent;font-size: 60px;color: white\">Combined Insights</button>")
+    valueBox(
+      value=entry_05 ,
+      width=NULL,
+      color = "orange",
+      icon = icon(
+        "bar-chart-o",
+        lib="font-awesome",
+        class = "bar-chart-o-2"
+      ),
+
+      subtitle = HTML(
+        " <button id=\"button4\"
+       type=\"button\"
+       class=\"btn btn-default action-button\"
+       style=\"background-color: Transparent;
+       border-color: Transparent;
+       font-size: 35px;
+       color: white\">Combined Insights</button>")
     )})
-  
+  #
   observeEvent(input$button4, {
     newtab4 <- switch(input$sidebar, "tab_homePage" = "tab_combinedInsights","tab_combinedInsights" = "tab_homePage")
     updateTabItems(session, "sidebar", newtab4)
   })
-  
-  
   #################Home Button#######################3
 
   observeEvent(input$home, {
@@ -2668,6 +2691,8 @@ shinyServer(function(input, output, session) {
     shinyjs::show("numOfCustomersComb")
     shinyjs::show("div_combineMarketing")
     
+    shinyjs::show("div_combineMarketingNow")
+    
     vectorInput <- input$slider_comb 
     
     custdataCustComb <- filter(custData, as.Date(custData$date) >= as.Date(vectorInput[1]) & as.Date(custData$date) <= as.Date(vectorInput[2])) 
@@ -2775,34 +2800,76 @@ shinyServer(function(input, output, session) {
     ))
   })
   
-  ########################################
+#########Combine Marketing Now#################
   #select product for combined marketing
-  output$output_productMarketing_Comb <- renderUI({
-    selectInput("input_productMarketing_Comb", "Please Select Product to Target Marketing", multiple = FALSE ,
-                choices = unique(custData$Description),1)
+  output$output_productMarketing_CombNow <- renderUI({
+    selectInput("input_productMarketing_CombNow", "Please Select Product to Target Marketing", multiple = FALSE ,
+                choices = unique(topprod$Description),1)
+    
+  })
+  
+  output$output_customerMarketingChoice_CombNow <- renderUI({
+    top20customers <- head(custSummaryDF,20)
+    
+    selectInput("input_customerMarketing_CombNow", "Please Select Customers to Target Marketing", multiple = FALSE ,
+                choices = unique(top20customers$CustomerID),1)
     
   })
   
   
   #select location for combined marketing
-  output$output_locationMarketing_Comb <- renderUI({
+  output$output_locationMarketing_CombNow <- renderUI({
     
-    selectInput("input_locationMarketing_Comb", "Please Select Product to Target Marketing", multiple = FALSE ,
-                choices = unique(custData$Country),1)
+    selectInput("input_locationMarketing_CombNow", "Please Select Country to Target Marketing", multiple = FALSE ,
+                choices = unique(countrySummaryDF$Country),1)
     
   })
   
   
-  observeEvent(input$btn_combineMarketing_Email, {
+  observeEvent(input$btn_combineMarketing_EmailNow, {
+
+    custID <- input$input_customerMarketing_CombNow
+    product <- input$input_productMarketing_CombNow
+    location <- input$input_locationMarketing_CombNow
     
-    showModal(modalDialog(
-      title = "Email Marketing",
-      "This is an important message!",
-      easyClose = TRUE
-    ))
-  })
+    custIDtrimed <- gsub(" ", "", custID) 
+    #trimws(custID, which = c("both"))
+    emailBody <- input$text_Marketing_Now
+    
+    toEmail <- paste('abc',custIDtrimed,'@gmail.com')
+    toEmailtrimed <- gsub(" ", "", toEmail)
+    
+    # edataDays <- top20cust %>%
+    #   mutate(
+    #     To = top20cust$Email,
+    #     Bcc = optional_bcc,
+    #     From = email_sender,
+    #     Subject = paste("Manual Promotion for ", product),
+    #     body = emailBody) %>%
+    #   select(To, Bcc, From, Subject, body)
+    # 
+    
+    #edataCombine
+    ddt <- data.frame("To" = toEmailtrimed, "Bcc" = optional_bcc, "From" = email_sender,
+                      "Subject" = paste("Manual Promotion for ", product), "body" = emailBody)
+    
+    
+    test_email <- mime(
+      To = toEmailtrimed,
+      Bcc = optional_bcc,
+      From = email_sender,
+      Subject = paste("Manual Promotion for ", product),
+      body = paste("Manual Promotion for ", product))
+    send_message(test_email)
+    
+    
+    
+  })# END of Observe Event for manualCampaign
   
-  observeEvent(input$btn_combineMarketing_SMS, {
+  
+
+  
+  observeEvent(input$btn_combineMarketing_SMSNow, {
     showModal(modalDialog(
       title = "SMS Marketing",
       "This is an important message!",
@@ -2810,7 +2877,6 @@ shinyServer(function(input, output, session) {
     ))
   })
   
-  
-  
+  ##########Email Marketing for Combine#############
   
 })# End of shiny
