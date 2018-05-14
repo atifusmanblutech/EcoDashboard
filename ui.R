@@ -60,11 +60,12 @@ dashboardPage(
           width: 40px;
           }
           
-          .users2 {color: #FFF; font-size: 100px;}
-          .product-hunt2 {color: #FFF; font-size: 100px;}
-          .calendar2 {color: #FFF; font-size: 100px;}
-          .globe2 {color: #FFF;font-size: 100px;}
-          .small-box {height: 250px}
+          .users2 {color: #FFF; font-size: 60px;}
+          .product-hunt2 {color: #FFF; font-size: 60px;}
+          .calendar2 {color: #FFF; font-size: 60px;}
+          .globe2 {color: #FFF;font-size: 60px;}
+          .bar-chart2{color: #FFF;font-size: 60px}
+          .small-box {height: 170px}
           ')
         )
       
@@ -73,8 +74,8 @@ dashboardPage(
     tabItems(
       tabItem(tabName = "tab_homePage", align="center",
               fluidRow(
-                br(),
-                br(),
+                # br(),
+                # br(),
                 # tags$div(href="#shiny-tab-tab_customerInsights", fluid = TRUE,
                 #          width = 3, "data-toggle" = "tab",
                 #          infoBox(value = "Go to Customer Insights",title = "Customer Insights")),
@@ -88,23 +89,23 @@ dashboardPage(
                 #          width = 3, "data-toggle" = "tab",
                 #          infoBox(value = "Go to Timeline Insights",title = "Timeline Insights")),
                 column(12,offset = 2,
-                       valueBoxOutput("box_01", width = 4)%>% withSpinner(color = "#0dc5c1") ,
+                       valueBoxOutput("box_01", width = 4),
                        valueBoxOutput("box_02", width = 4)%>% withSpinner(color = "#0dc5c1")
                 )
-              ),
-              br(),
+              ) ,
+              # br(),
               fluidRow(
                 column(12,offset = 2,
-                       valueBoxOutput("box_03", width = 4)%>% withSpinner(color = "#0dc5c1"),
-                       valueBoxOutput("box_04", width = 4)%>% withSpinner(color = "#0dc5c1")
+                       valueBoxOutput("box_03", width = 4),
+                       valueBoxOutput("box_04", width = 4)
                 )
               ),
-              br(),
+              # br(),
               
               
-              fluidRow(height = 3,
+              fluidRow(height = 2,
                        column(12,offset = 2,
-                              valueBoxOutput("box_05",width = 8)%>% withSpinner(color = "#0dc5c1")
+                              valueBoxOutput("box_05",width = 8)
                               )
                        )
               ),
@@ -318,7 +319,7 @@ dashboardPage(
                   width = 12,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue per Customer",
                   
                   div(style='width:100%; overflow-x: scroll', sliderInput("numOfCustomers", "Number of Customers:",
-                                                                          min = 0, max = 50,
+                                                                          min = 10, max = 50,
                                                                           value = 40), plotlyOutput('revenuePerCustomer')) %>% withSpinner(color =
                                                                                                                                              "#0dc5c1"),
                   
@@ -457,7 +458,7 @@ dashboardPage(
                     
                     br(),
                     sliderInput("sliderNumOfProducts", "Select Number of Products:",
-                                min = 0, max = 20,
+                                min = 10, max = 20,
                                 value = 5),
                     br(),
                     hr(),
@@ -630,7 +631,7 @@ dashboardPage(
               
         
               tabBox(width=12,id="tabBox_next_previous",
-                     tabPanel("Now",
+                     tabPanel("Launch",
                               
                               shinyjs::hidden(
                                 div(id="div_combineMarketingNow",
@@ -682,7 +683,7 @@ dashboardPage(
                               )#end of shinyjs::hidden
                               
                      ),
-                     tabPanel("Schedule Marketing",
+                     tabPanel("Schedule",
                              
                               
                               shinyjs::hidden(

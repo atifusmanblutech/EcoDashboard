@@ -35,9 +35,9 @@ options(warn=-1)
 
 # # 1. Reading file
 dataframe <- read_csv("data/data_numbers.csv")
-custData1 <- na.omit(dataframe)
+custData <- na.omit(dataframe)
 
-custData <- custData1[1:20000,]
+# custData <- custData[1:20000,]
 
 cities <- read.csv("data/ccit.csv")
 
@@ -967,12 +967,7 @@ shinyServer(function(input, output, session) {
       value=entry_05 ,
       width=NULL,
       color = "orange",
-      icon = icon(
-        "bar-chart-o",
-        lib="font-awesome",
-        class = "bar-chart-o-2"
-      ),
-
+      icon = icon("bar-chart",lib="font-awesome", class = "bar-chart2"),
       subtitle = HTML(
         " <button id=\"button4\"
        type=\"button\"
@@ -1985,16 +1980,16 @@ shinyServer(function(input, output, session) {
         customerBreakdownSelected <- customerBreakdownClass[customerBreakdownClass$class %in% selected,]
         
         customerBreakdownFiltered <- customerBreakdownSelected %>%
-          group_by(class) %>%
+          group_by(class, Country) %>%
           summarise(customers = n_distinct(CustomerID)) %>%
           filter(customers > 5)
         
         
         rfmGraph <- ggplot(customerBreakdownFiltered, aes(
-          x= reorder(class, customers), y = customers, fill = class,
+          x= Country, y = customers, fill = Country,
           text = paste("Customers : ", customers,
                        "<br>",
-                       "Location : ", class)
+                       "Location : ", Country)
         )) + geom_bar(stat= "identity",width = .3) + labs(x = 'Location', y = 'No. of Customers', title =
                                                             'Customers Per Location',
                                                           fill= '   Class')
