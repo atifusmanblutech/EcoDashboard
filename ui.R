@@ -317,13 +317,32 @@ dashboardPage(
               fluidRow(
                 box(
                   width = 12,  status = "primary", collapsible = T, solidHeader = T, title = "Revenue per Customer",
+                  tabBox(width=12,id="tabBox2",
+                         tabPanel("Top",
+                                  div(id="div_top",style='width:100%; overflow-x: scroll', sliderInput("numOfCustomers", "Number of Customers:",
+                                                                                          min = 10, max = 50,
+                                                                                          value = 40), 
+                                      plotlyOutput('revenuePerCustomer')
+                                      #verbatimTextOutput("revenuePerCustomerClickInfo")
+                         
+                                      ),
+                                       
+                                  verbatimTextOutput("revenuePerCustomerClickInfo")                
+                         ),
+                         tabPanel("Bottom",
+                                  div(id="div_bottom",style='width:100%; overflow-x: scroll', sliderInput("numOfCustomersBottom", "Number of Customers:",
+                                                                                          min = 10, max = 50,
+                                                                                          value = 40), 
+                                      plotlyOutput('revenuePerCustomerBottom')
+                                      # 
+                                      # verbatimTextOutput("revCustomerClick_Bottom")
+                                      ),
+                                  # 
+                                  verbatimTextOutput("revCustomerClick_Bottom")
+                         )
+                  )
                   
-                  div(style='width:100%; overflow-x: scroll', sliderInput("numOfCustomers", "Number of Customers:",
-                                                                          min = 10, max = 50,
-                                                                          value = 40), plotlyOutput('revenuePerCustomer')) %>% withSpinner(color =
-                                                                                                                                             "#0dc5c1"),
                   
-                  verbatimTextOutput("revenuePerCustomerClickInfo")
                 ),
                 box(
                   width = 8,  status = "primary", collapsible = T, solidHeader = T, title = "RFM Plot",
@@ -349,100 +368,116 @@ dashboardPage(
                 ),
                 box(
                   width = 4,  status = "warning", collapsible = T, solidHeader = T, title = "Marketing",
-                  shinyjs::hidden(
-                    div(
-                      id="div_personalizedCampaign",
-                      br(),
-                      actionButton(
-                        "cusPersonalizedCampaignEmail",
-                        "Personalised Email Campaign",
-                        icon("envelope"),style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
-                        
-                      ),
-                      helpText(
-                        "Note: Selecting this button will launch an Email Campaign",
-                        br(),
-                        "for top Customers"
-                        
-                      ),
-                      
-                      br(),
-                      actionButton(
-                        "cusPersonalizedCampaignSms",
-                        "Personalised SMS Campaign",
-                        icon("envelope"),style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
-                        
-                      ),
-                      helpText(
-                        "Note: Selecting this button will launch an SMS Campaign",
-                        br(),
-                        "for top Customers"
-                      )
-                    )),
+                  # shinyjs::hidden(
+                  #   div(
+                  #     id="div_personalizedCampaign",
+                  #     br(),
+                      tabBox(width = 12, id="tabl_personalMarketing",
+                             tabPanel(title="Personalized Campaign",
+                             selectInput(
+                               "input_cusMarketingChoice",
+                               "Please Select Marketing Type",
+                               choices = c("Top Customers" = "topCustomers", "Bottom Customers" = "bottomCustomers"),
+                               1
+                             ),
+                              
+                                      actionButton(
+                                        "cusPersonalizedCampaignEmail",
+                                        "Personalised Email Campaign",
+                                        icon("envelope"),style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                        
+                                      ),
+                                      helpText(
+                                        "Note: Selecting this button will launch an Email Campaign",
+                                        br(),
+                                        "for top Customers"
+                                        
+                                      ),
+                                      
+                                      br(),
+                                      actionButton(
+                                        "cusPersonalizedCampaignSms",
+                                        "Personalised SMS Campaign",
+                                        icon("envelope"),style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                        
+                                      ),
+                                      helpText(
+                                        "Note: Selecting this button will launch an SMS Campaign",
+                                        br(),
+                                        "for top Customers"
+                                      )
+                                              
+                                      
+                             )#end of tabpanel
+                      ),#end of tabbox1
+                  tabBox(width = 12, id="tabbox2",
+                         tabPanel(title="RFM Marketing",
+                                  selectInput(
+                                    "input_rfmMarketingChoice",
+                                    "Please Select Marketing Type",
+                                    choices = c("All", "Gold", "Silver", "Platinum"),
+                                    1
+                                  ),
+                                  
+                                  selectInput(
+                                    "CustomerMarketingChoice",
+                                    "Please Select Marketing Type",
+                                    choices = c("Email Marketing" = "emailMarketing", "SMS Marketing" = "smsMarketing"),
+                                    2
+                                  ),
+                                  helpText("Note: Select how you want to do marketing"),
+                                  br(),
+                                  
+                                  #### Condition for SMS Marketing
+                                  conditionalPanel(
+                                    condition = "input.CustomerMarketingChoice == 'smsMarketing'",
+                                    
+                                    textAreaInput(
+                                      "textSmsMarketing",
+                                      "Enter campaign text or offers to send: ",
+                                      "Special Discount Offers!",
+                                      "100%",
+                                      "100px",
+                                      resize = "vertical"
+                                    ),
+                                    
+                                    actionButton("manualSmsCampaignCustomer",
+                                                 "Launch SMS Campaign", icon("envelope"),
+                                                 style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                    ),
+                                    hr()
+                                    
+                                    
+                                  ),
+                                  
+                                  
+                                  conditionalPanel(
+                                    condition = "input.CustomerMarketingChoice == 'emailMarketing'",
+                                    
+                                    textAreaInput(
+                                      "textEmailMarketing",
+                                      "Enter campaign text or offers to send: ",
+                                      "Special Discount Offers!",
+                                      "100%",
+                                      "100px",
+                                      resize = "vertical"
+                                    ),
+                                    actionButton("manualEmailCampaignCustomer", "Launch Email Campaign",  icon("envelope"), 
+                                                 style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
+                                    ),
+                                    hr()
+                                    
+                                  )        
+                         )
+                         
+                         
+
+              )#end of tabbox2
+                  )
                   
-                  br(),
-                  hr(),
-                  shinyjs::hidden(
-                    div(id="div_customerMarketing",
-                        h3("Marketing", style = "align:center;text-align:center;"),
-                        hr(style ="border-top: dotted 1px #FFFFFF"),
-                        selectInput(
-                          "CustomerMarketingChoice",
-                          "Please Select Marketing Type",
-                          choices = c("Email Marketing" = "emailMarketing", "SMS Marketing" = "smsMarketing"),
-                          2
-                        ),
-                        helpText("Note: Select how you want to do marketing"),
-                        br(),
-                        
-                        #### Condition for SMS Marketing
-                        conditionalPanel(
-                          condition = "input.CustomerMarketingChoice == 'smsMarketing'",
-                          
-                          textAreaInput(
-                            "textSmsMarketing",
-                            "Enter campaign text or offers to send: ",
-                            "Special Discount Offers!",
-                            "100%",
-                            "100px",
-                            resize = "vertical"
-                          ),
-                          
-                          actionButton("manualSmsCampaignCustomer",
-                                       "Launch SMS Campaign", icon("envelope"),
-                                       style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
-                          ),
-                          hr()
-                          
-                          
-                        ),
-                        
-                        
-                        conditionalPanel(
-                          condition = "input.CustomerMarketingChoice == 'emailMarketing'",
-                          
-                          textAreaInput(
-                            "textEmailMarketing",
-                            "Enter campaign text or offers to send: ",
-                            "Special Discount Offers!",
-                            "100%",
-                            "100px",
-                            resize = "vertical"
-                          ),
-                          actionButton("manualEmailCampaignCustomer", "Launch Email Campaign",  icon("envelope"), 
-                                       style = "color: #fff; background-color: #337ab7; border-color: #2e6da4; width: 100%; padding-left: 2dp: margin: 5dp;"
-                          ),
-                          hr()
-                          
-                        )      
-                        
-                    )#end of div_customerMarketing
-                  )#end of shinyjs::hidden
-                  
-                  
-                  
-                )
-              )),#end of customer insight tab
+                
+              )),
+#end of customer insight tab
       #########Location Insights Tab################
       
       tabItem(tabName = "tab_locationInsights",

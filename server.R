@@ -37,7 +37,7 @@ options(warn=-1)
 dataframe <- read_csv("data/data_numbers.csv")
 custData <- na.omit(dataframe)
 
-# custData <- custData[1:20000,]
+custData <- custData[1:20000,]
 
 cities <- read.csv("data/ccit.csv")
 
@@ -1079,32 +1079,6 @@ shinyServer(function(input, output, session) {
         
         #Getting customer info of clicked customer
         myDF <-  customerBreakdown[ customerBreakdown$CustomerID == customerIDdf$CustomerID,]
-        # 
-        #Generating a new DF to be used to plot a new graph to show customer products
-        # custProdDF <- myDF %>%
-        #   group_by(Description, dayOfWeek) %>%
-        #   summarise(revenue = sum(lineTotal), transactions = n_distinct(InvoiceNo)) %>%
-        #   mutate(aveOrdVal = (round((revenue / transactions),2))) %>%
-        #   ungroup() %>%
-        #   arrange(desc(revenue))
-        
-        # Displaying newly generated DF
-        # output$top20customersDT <- DT::renderDataTable(
-        #   myDF,
-        #   options = list(scrollX = TRUE)
-        # )
-        
-        # output$customerClickGraph <- renderPrint({
-        # 
-        #   print(
-        #     ggplotly(
-        #       
-        #       ggplot(custProdDF, aes(dayOfWeek, revenue)) + geom_bar(aes(fill = Description), position = "dodge", stat="identity")
-        #     ),width = plotWidth, height = plotHeight
-        #   )
-        #   
-        #   })
-        # f1(custProdDF)
         
         cat(paste(" CustomerID: ", myDF$CustomerID, "\n Favourite Day:", myDF$mostDay, "\n Favourite Product: ", myDF$mostProd))
       }
@@ -1136,26 +1110,74 @@ shinyServer(function(input, output, session) {
         source = "revenuePerCustomerEvent",
         tooltip = c("text")
         
-        # l <- list(
-        #   font = list(
-        #     family = "sans-sarif",
-        #     size = 12
-        #   ),
-        #   bgcolor = "#E2E2E2",
-        #   bordercolor = "#FFFFFF",
-        #   borderwidth = 2
-        # )
-        
-      ) 
-      # %>% layout(xaxis = list(ticks = "inside", ticklen = 10,
-      #                           rangeslider = list(type = "number", thickness=0.1),
-      #                           rangeselector = list(
-      #                             buttons = list(list(step = "all", label = "All")))
-      # ))
-      # %>%
-      #   layout(legend = l)
+      ),width="100%" 
         )
   })
+  
+  ###########Customer Revenue Bottom###############
+  
+  
+  output$revenuePerCustomerBottom<- renderPlotly({
+
+    top20customers <- tail(customerBreakdown11, input$numOfCustomersBottom)
+    myTitle <- paste("Showing Total Revenue of Bottom ", input$numOfCustomersBottom , " Customers")
+
+    top20customers$CustomerID <- as.character(top20customers$CustomerID)
+
+    #Event Data
+    output$revPerCust_ClickInfoBottom <- renderPrint({
+      paste("Revenue Per Customer Click: ","<br>")
+      # str(input$plot_click)
+
+      d <- event_data("plotly_click",source = "revenuePerCustomerEventBottom")
+      if (is.null(d))
+      {"Click on a state to view event data"
+      }
+      else
+      {
+        #Getting customer ID from click event
+        customerIDdf <- top20customers[top20customers$revenue == d$y,]
+
+        #Getting customer info of clicked customer
+        myDF <-  customerBreakdown[ customerBreakdown$CustomerID == customerIDdf$CustomerID,]
+
+        cat(paste(" CustomerID: ", myDF$CustomerID, "\n Favourite Day:", myDF$mostDay, "\n Favourite Product: ", myDF$mostProd))
+      }
+    })
+
+    print(
+      ggplotly(
+        ggplot(top20customers,
+               aes(
+                 x=reorder(CustomerID,revenue),
+                 y = revenue,
+                 fill=CustomerID,
+                 text = paste(
+                   "Revenue ($) : ", revenue,
+                   "<br>",
+                   "CustomerID : ", CustomerID
+                 ))) + geom_col(group=1) + labs(
+                   x = 'Customers',
+                   y = 'Revenue ($)',
+                   title = myTitle
+                 )  + theme(
+                   axis.text.x = element_text(
+                     face="bold",
+                     color="#000000",
+                     size=6,
+                     angle=45
+                   )) + scale_y_continuous(
+                     labels = scales::comma),
+        source = "revenuePerCustomerEventBottom",
+        tooltip = c("text")
+
+      ),width="100%"
+    )
+  })
+
+  
+  
+  
   
   f1 <- function(x) {
     output$customerClickGraph <- renderPrint({
@@ -1202,50 +1224,34 @@ shinyServer(function(input, output, session) {
   ##########Customer Email Personalized Campaign############
   
   observeEvent(input$cusPersonalizedCampaignEmail, {
-    
-    selectedCustomers <- head(customerBreakdown11,input$numOfCustomers)
-    
-    day <- selectedCustomers$mostDay
-    custid<-selectedCustomers$CustomerID
-    prod<-selectedCustomers$mostProd
-    body <- "Dear Customer %i,
-    Special discount offers for %s on %s
-    Thankyou!"
-    
-    
-    
-    
-    #creating a new dataframe containing mails
-    edat1 <- selectedCustomers %>%
-      mutate(
-        To = sprintf('<%s>',selectedCustomers$Email),
-        Bcc = optional_bcc,
-        From = email_sender,
-        Subject = "Customer Promotion Offer",
-        body = sprintf(body,custid, day, prod)) %>%
-      select(To, Bcc, From, Subject, body)
-    
-    emails1 <- edat1 %>%
-      pmap(mime)
-    safe_send_message <- safely(send_message)
-    sent_mail <- emails1 %>%
-      map(safe_send_message)
-    
-    output$customertext<-DT::renderDataTable(
-      edat1,
-      options = list(scrollX = TRUE))
-    
-    showNotification(paste("Personalized Emails sent to Top ", input$sliderNumOfProducts), type ="message")
-    
-    # POST(url,authenticate(AUTH_ID,AUTH_TOKEN),body=list(src="923335417533",dst="923345505466",text=message))
-    
-  })
-  
-  ##########Customer Sms Campaign Personalize######################################
-  
-  observeEvent(input$cusPersonalizedCampaignSms, {
-    
-    selectedCustomers2 <- head(customerBreakdown11,input$numOfCustomers)
+    if(input$input_cusMarketingChoice == "topCustomers")
+    {
+      if(req(input$numOfCustomers)>0)
+      {
+        selectedCustomers2 <- head(customerBreakdown11,input$numOfCustomers)
+        
+      }
+      else
+      {
+        selectedCustomers2 <- head(customerBreakdown11,10)
+        
+      }
+      
+    }
+    else(input$input_cusMarketingChoice == "bottomCustomers")
+    {
+      if(req(input$numOfCustomersBottom)>0)
+      {
+        selectedCustomers2 <- tail(customerBreakdown11,input$numOfCustomers)
+        
+      }
+      else
+      {
+        selectedCustomers2 <- tail(customerBreakdown11,10)
+        
+      }
+      
+    }
     
     
     day <- selectedCustomers2$mostDay
@@ -1258,6 +1264,82 @@ shinyServer(function(input, output, session) {
     message <- sprintf(body, custid, prod, day)
     
     
+    # selectedCustomers <- head(customerBreakdown11,input$numOfCustomers)
+    # 
+    # day <- selectedCustomers$mostDay
+    # custid<-selectedCustomers$CustomerID
+    # prod<-selectedCustomers$mostProd
+    # body <- "Dear Customer %i,
+    # Special discount offers for %s on %s
+    # Thankyou!"
+    # 
+    
+    
+    
+    #creating a new dataframe containing mails
+    edat1 <- selectedCustomers2 %>%
+      mutate(
+        To = sprintf('<%s>',selectedCustomers2$Email),
+        Bcc = optional_bcc,
+        From = email_sender,
+        Subject = "Customer Promotion Offer",
+        body = sprintf(body,custid, day, prod)) %>%
+      select(To, Bcc, From, Subject, body)
+    
+    emails1 <- edat1 %>%
+      pmap(mime)
+    safe_send_message <- safely(send_message)
+    sent_mail <- emails1 %>%
+      map(safe_send_message)
+    
+    
+    showNotification("Personalized Emails sent", type ="message")
+    
+    # POST(url,authenticate(AUTH_ID,AUTH_TOKEN),body=list(src="923335417533",dst="923345505466",text=message))
+    
+  })
+  
+  ##########Customer Sms Campaign Personalize######################################
+  
+  observeEvent(input$cusPersonalizedCampaignSms, {
+    if(input$input_cusMarketingChoice == "topCustomers")
+    {
+      if(req(input$numOfCustomers) > 0)
+      {
+        selectedCustomers2 <- head(customerBreakdown11,input$numOfCustomers)
+        
+      }
+      else
+      {
+        selectedCustomers2 <- head(customerBreakdown11,10)
+        
+      }
+      
+    }
+    else(input$input_cusMarketingChoice == "bottomCustomers")
+    {
+      if(req(input$numOfCustomersBottom) > 0)
+      {
+        selectedCustomers2 <- tail(customerBreakdown11,input$numOfCustomersBottom)
+        
+      }
+      else
+      {
+        selectedCustomers2 <- tail(customerBreakdown11,10)
+        
+      }
+      
+    }
+    
+    
+    day <- selectedCustomers2$mostDay
+    custid<-selectedCustomers2$CustomerID
+    prod<-selectedCustomers2$mostProd
+    body <- "Dear Customer %i,
+    Special discount offers for %s on %s
+    Thankyou!"
+    
+    message <- sprintf(body, custid, prod, day)
     
     for (row in 1:nrow(selectedCustomers2))
     {
@@ -2091,29 +2173,17 @@ shinyServer(function(input, output, session) {
       textSmsMarketingInput <- input$textSmsMarketing
     }
     
-    
-    selected <- customerRFMchoiceInput()
-    
-    # showNotification(paste(selected," is selected"), type = "message")
-    
-    
     #if nothing selected or basic graph.. then show basic graph
-    if(isTruthy(selected))
+    if(isTruthy(input$input_rfmMarketingChoice))
     {
-      if(selected == "Total Classification Graph")
+      if(input$input_rfmMarketingChoice == "All")
       {
-        
         dfWithNumbers <- customerBreakdownClass
-        
-        #collect Numbers of customers of all classes.. Gold, Silver, Platium
-        # showNotification("Showing RFM Graph", type = "message")
-        
       }
       else
       {
         #collect numbers of only selected customers
-        dfWithNumbers <- customerBreakdownClass[customerBreakdownClass$class %in% selected,]
-        
+        dfWithNumbers <- customerBreakdownClass[customerBreakdownClass$class %in% input$input_rfmMarketingChoice,]
         
       }
     }
@@ -2121,7 +2191,6 @@ shinyServer(function(input, output, session) {
     {
       dfWithNumbers <- customerBreakdownClass
       
-      # showNotification("Showing RFM Graph", type = "message")
     }
     
     top10cust <- head(dfWithNumbers,10)
@@ -2164,13 +2233,10 @@ shinyServer(function(input, output, session) {
       textEmailMarketingInput <- input$textEmailMarketing
     }
     
-    
-    selected <- customerRFMchoiceInput()
-    
     #if nothing selected or basic graph.. then show basic graph
-    if(isTruthy(selected))
+    if(isTruthy(input$input_rfmMarketingChoice))
     {
-      if(selected == "Total Classification Graph")
+      if(input$input_rfmMarketingChoice == "All")
       {
         
         dfWithNumbers <- customerBreakdownClass
@@ -2178,7 +2244,7 @@ shinyServer(function(input, output, session) {
       }
       else
       {
-        dfWithNumbers <- customerBreakdownClass[customerBreakdownClass$class %in% selected,]
+        dfWithNumbers <- customerBreakdownClass[customerBreakdownClass$class %in% input$input_rfmMarketingChoice,]
         
       }
     }
@@ -2206,7 +2272,7 @@ shinyServer(function(input, output, session) {
         To = sprintf('<%s>', top10cust$Email),
         Bcc = optional_bcc,
         From = email_sender,
-        Subject = paste(sub," ", selected, " Customers"),
+        Subject = paste(sub," ", input$input_rfmMarketingChoice, " Customers"),
         body = textEmailMarketingInput) %>%
       select(To, Bcc, From, Subject, body)
     
